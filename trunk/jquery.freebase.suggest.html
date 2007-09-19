@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- Copyright 2007 Metaweb Technologies, Inc.  All Rights Reserved. -->
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>	
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+	<link type="text/css" rel="stylesheet" href="jquery.freebase.suggest.css" />
+	<script type="text/javascript" src="../firebug/firebug.js"></script>
+	<script type="text/javascript" src="jquery-1.2.1.pack.js"></script>
+	<script type="text/javascript" src="jquery.freebase.suggest.js"></script> 
+	
+	<script type="text/javascript">
+		jQuery(function($) {
+			$(".ac_input")
+				.freebaseSuggest({soft:true, suggest_new:"Create new foo"})
+				.bind("suggest", function(e, data) {
+					console.log("suggest id: ", data.id, ", name: ", data.name);
+				})
+				.bind("suggest-submit", function(e, data) {
+					console.log("suggest submit id: ", data.id, ", name: ", data.name);
+				})				
+				.bind("suggest-new", function(e, data) {
+					console.log("suggest new name: ", data.name);
+				});				
+				
+				
+			$(".bind_test").focus(function() {
+				$(this).unbind("keypress", my_keypress).keypress(my_keypress);
+			});
+		});
+		
+		function my_keypress(e)  {
+			console.log("my keypress", e.keyCode);
+		}
+	</script>
+	
+</head>
+
+<body>
+
+	<center>
+		<input class="ac_input" type="text"/>
+		<input class="ac_input" type="text"/>
+		
+		<br/><hr/>
+		
+		<input class="bind_test" type="text"/>
+	</center>
+	
+</body>
+
+</html>
+
+
