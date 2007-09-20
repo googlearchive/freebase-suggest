@@ -530,7 +530,7 @@ fbs.transform = function(data, q, options) {
     else
         $(".fbs-li-props", div).remove();
     
-    return div;    
+    return div.innerHTML;    
 };
 
 fbs.create_list_item = function(data, q, options) {
