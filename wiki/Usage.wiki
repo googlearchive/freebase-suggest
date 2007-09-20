@@ -1,4 +1,4 @@
-Requires at least jquery-1.2.
+Requires at least [http://code.google.com/p/jqueryjs/ jquery-1.2].
 
 freebaseSuggest() provides a way to attach Freebase suggestion behavior to a
 text input using the Freebase.com autocomplete service.
@@ -56,6 +56,7 @@ $('#myInput')
      .bind('suggest-submit', function(e, data) { console.log('suggest submit'); })
      .bind('suggest-new', function(e, data) { console.log('suggest new: ', data.name); });
 }}}
+ 
  
  
  
