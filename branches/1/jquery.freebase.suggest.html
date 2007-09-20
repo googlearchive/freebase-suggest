@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>	
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+	<link type="text/css" rel="stylesheet" href="jquery.freebase.suggest.css" />
+	<script type="text/javascript" src="jquery-1.2.1.pack.js"></script>
+	<script type="text/javascript" src="jquery.freebase.suggest.js"></script> 
+	
+	<script type="text/javascript">
+		jQuery(function($) {
+			$("#soft_input")
+				.freebaseSuggest({soft:true})
+				.bind("suggest", function(e, data) {
+					log("suggest id: " , data.id , ", name: " , data.name);
+				})
+				.bind("suggest-submit", function(e, data) {
+					log("suggest submit id: " , data.id ,  ", name: " , data.name);
+				});		
+
+			$("#hard_input")
+				.freebaseSuggest({soft:false, suggest_new:"Suggest new topic"})
+				.bind("suggest", function(e, data) {
+					log("suggest id: " , data.id , ", name: " , data.name);
+				})
+				.bind("suggest-submit", function(e, data) {
+					log("suggest submit id: " , data.id ,  ", name: " , data.name);
+				})
+				.bind("suggest-new", function(e, data) {
+					log("suggest new name: "  , data.name);
+				});									
+		});
+		
+		function log() {
+			var msg = "";
+			$.each(arguments, function(i,n) {
+				msg += n;
+			});
+			if (msg)
+				$("#msg").append("<li>" + msg + "</li>");
+		};
+		if (typeof console != "undefined" && console.log) {
+			log = console.log;
+		}
+	</script>
+	
+</head>
+
+<body>
+
+	<center>
+		<label for="soft_input">Soft suggest</label>
+		<input id="soft_input" type="text"/>
+		
+		<br/>
+		<br/>		
+		
+		<label for="hard_input">Hard suggest with suggest new option</label>	
+		<input id="hard_input" type="text"/>
+		
+		<hr/>
+		
+		<ul id="msg"></ul>
+	</center>
+	
+</body>
+
+</html>
+
+
