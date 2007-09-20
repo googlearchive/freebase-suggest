@@ -406,6 +406,8 @@ fbs.ac_receive = function(input, o) {
     var result = [];
     if ("list" in o && "listItems" in o.list)
         result = o.list.listItems;
+    else if ("result" in o)
+        result = o.result;
     else if ("results" in o)
         result = o.results;    
     else {
