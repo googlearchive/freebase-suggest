@@ -26,7 +26,7 @@ In addition, freebaseSuggest will trigger the following events on behalf of
 the input it's attached to. They include:
 
 ||suggest||Triggered when something is selected from the suggestion list. The data object will contain id and name fields: { id: aString, name: aString }.||
-||suggest-none||Triggered when nothing is selected from the list. When a user presses the enter key, when nothing is selected in the suggestion list. The data object will only contain a name field: { name: aString }.||
+||suggest-new||Triggered when the suggest_new option is selected. The data object will only contain a name field: { name: aString }.||
 ||suggest-submit||Triggered when user presses enter key after selecting from list or when nothing is highlighted from the list (soft). The data object will contain a name and an id field (if something was selected from the list previously).||
 
 
@@ -56,6 +56,7 @@ $('#myInput')
      .bind('suggest-submit', function(e, data) { console.log('suggest submit'); })
      .bind('suggest-new', function(e, data) { console.log('suggest new: ', data.name); });
 }}}
+ 
  
  
  
