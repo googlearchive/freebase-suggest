@@ -28,7 +28,7 @@ the input it's attached to. They include:
 ||suggest-submit||Triggered when user presses enter key after selecting from list or when nothing is highlighted from the list (soft). The data object will contain a name and/or id field.||
 
 
-Example 1. Attach Freebase suggestion behavior to #myInput with default options and on 'suggest', output the selected id the console.
+Example 1. Attach Freebase suggestion behavior to #myInput with default options and on 'suggest', output the selected id to the console.
 {{{
 $('#myInput')
      .freebaseSuggest()
@@ -54,6 +54,7 @@ $('#myInput')
      .bind('suggest-submit', function(e, data) { console.log('suggest submit'); })
      .bind('suggest-new', function(e, data) { console.log('suggest new: ', data.name); });
 }}}
+ 
  
  
  
