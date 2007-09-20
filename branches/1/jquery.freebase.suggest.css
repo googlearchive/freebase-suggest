@@ -1,13 +1,12 @@
 
 .fbs-topshadow {
 	font-family: Arial, Helvetica, sans-serif;		
-	font-size: .85em;	
-	margin: -4px 0px 0px -4px;
+	margin: -8px 0px 0px -4px;
 	padding:0;
 	display:block;
 	z-index:1000;
 	position:absolute;
-	background: url('jquery.freebase.suggest.shadow.top.left.png') no-repeat top left #fff;
+	background: url('jquery.freebase.suggest.shadow.top.left.png') no-repeat top left;
 }
 
 .fbs-bottomshadow {
@@ -15,7 +14,7 @@
   right: -4px;
   bottom: -4px;
   padding: 0px 4px 4px 0px;
-  background: url('jquery.freebase.suggest.shadow.bottom.right.png') no-repeat bottom right #fff;   
+  background: url('jquery.freebase.suggest.shadow.bottom.right.png') no-repeat bottom right;   
 }
 
 .fbs-flyout-container, 
