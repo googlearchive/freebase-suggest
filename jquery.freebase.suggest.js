@@ -840,7 +840,7 @@ fbs.flyout_show = function(li, options, img_src, blurb) {//fb.log("flyout_show",
     //var pos = $(li).offset();
     $("#fbs_flyout")
         .css({top:pos.top, left:left, width:options.width})
-        .fadeIn("fast");
+        .show();
     
 };
 
