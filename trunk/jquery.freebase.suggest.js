@@ -108,8 +108,9 @@
  *                  in the suggestion list. The data object will only contain
  *                  a name field: { name: aString }.
  * 
- * suggest-new:     Triggered when user selects the suggest new option. The
- *                  data object will contain a name field: { name: aString }.
+ * suggest-submit   Triggered when user presses enter key after selecting from
+ *                  list or when nothing is highlighted from the list (soft).
+ *                  The data object will contain a name and/or id field.
  * 
  *
  * @example
@@ -445,7 +446,6 @@ fbs.ac_load = function(input) {//fb.log("ac_load", input);
         window.setTimeout(delegate(fbs.sm.handle, fbs.sm, [{id:"AUTOCOMPLETE_RESULT", input:input, result:fbs.cache[input.fbs_id][txt]}]), 0);
         return;
     }    
-    console.log("fbs.options 1");
     var options = fbs.options(input);
     var txt = $.trim(fbs.val(input));
     var param = options.ac_param;
@@ -577,7 +577,6 @@ fbs.loading_show = function(input) {
                     '</div>' +
                 '</div>');        
     }
-        console.log("fbs.options 2");
     var options = fbs.options(input);
     var pos = $(input).offset({border: true, padding: true});
     
@@ -599,7 +598,6 @@ fbs.list_show = function(input, result) {//fb.log("list_show", input, result);
         return;
     if (!result) 
         result = [];
-            console.log("fbs.options 3");
     var options = fbs.options(input);  
     var txt = fbs.val(input);
     var list = null;
@@ -1031,7 +1029,6 @@ fbs.state_start.prototype = new fb.state();
 fbs.state_start.prototype.handle = function(data) {//fb.log("state_start.handle", data);
     if (!data || !data.input) 
         return;
-            console.log("fbs.options 4");
     var options = fbs.options(data.input);
     switch (data.id) {
         case "TEXTCHANGE":
@@ -1073,7 +1070,6 @@ fbs.state_getting.prototype.exit = function(data) {//fb.log("state_getting.exit"
 fbs.state_getting.prototype.handle = function(data) {//fb.log("state_getting.handle", data);
     if (!data || !data.input) 
         return;
-            console.log("fbs.options 5");
     var options = fbs.options(data.input);    
     switch (data.id) {
         case "TEXTCHANGE":
@@ -1104,7 +1100,6 @@ fbs.state_suggesting.prototype.enter = function(data) {//fb.log("state_suggestin
     if (!data || !data.input || !data.result) 
         return;
     fbs.list_show(data.input, data.result);
-        console.log("fbs.options 6");
     var options = fbs.options(data.input);
     if (!options.soft)
         fbs.list_select(0, null, options);
@@ -1114,8 +1109,7 @@ fbs.state_suggesting.prototype.exit = function(data) {//fb.log("state_suggesting
 };
 fbs.state_suggesting.prototype.handle = function(data) {//fb.log("state_suggesting.handle", data);
     if (!data || !data.input) 
-        return;
-    console.log("fbs.options 7");        
+        return;    
     var options = fbs.options(data.input);
     switch (data.id) {
         case "TEXTCHANGE":
