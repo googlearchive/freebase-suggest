@@ -14,7 +14,7 @@ the following attributes:
 ||ac_path||The path to the autcomplete service. Default is "/api/service/autocomplete".||
 ||ac_param||The query parameters to the autocomplete service. NOTE: until we flush out the Freebase autocomplete service, these parameters will most likely to change.||
 ||ac_qstr||This is the parameter name to be passed to the autocomplete service for the string to autocomplete on. The value will be what the user typed in the input. Default is "prefix".||
-||blurb_path||The path to the blurb service for the description to be shownin the flyout. Default is "/api/trans/blurb".||
+||blurb_path||The path to the blurb service for the description to be shown in the flyout. Default is "/api/trans/blurb".||
 ||blurb_param||The query parameters to the blurb service. Default is { maxlength: 300 }.||
 ||thumbnail_path||The path to the thumbnail service to be shown in the flyout. Default is "/api/trans/image_thumb".||
 ||thumbnail_param||The query paramters to the thumbnail service. Default is {}.||
@@ -56,6 +56,7 @@ $('#myInput')
      .bind('suggest-submit', function(e, data) { console.log('suggest submit'); })
      .bind('suggest-new', function(e, data) { console.log('suggest new: ', data.name); });
 }}}
+ 
  
  
  
