@@ -1286,6 +1286,9 @@ function handleEvent(event) {
     var returnValue = true;
     // grab the event object (IE uses a global event object)
     event = event || fixEvent(window.event);
+    // Fix target property, if necessary
+	if (!event.target && event.srcElement)
+	   event.target = event.srcElement;
     // get a reference to the hash table of event handlers
     var handlers = this.events[event.type];
     // execute each event handler
