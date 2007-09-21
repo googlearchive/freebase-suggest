@@ -16,6 +16,10 @@
   padding: 0px 4px 4px 0px;
   background: url('jquery.freebase.suggest.shadow.bottom.right.png') no-repeat bottom right;   
 }
+* html .fbs-bottomshadow, 
+* html .fbs-topshadow {
+  background:none;
+}
 
 .fbs-flyout-container, 
 .fbs-ul { 
