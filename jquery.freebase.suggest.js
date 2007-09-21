@@ -504,7 +504,14 @@ fbs.transform = function(data, q, options) {
                 types.push(fbs.name(n));
         });
     types = types.join(", ");
-    
+
+    var domains = [];
+    if (data.domain)
+        $.each(data.domain, function(i,n){
+            domains.push(fbs.name(n));
+        });
+    domains = domains.join(", ");
+
     var aliases = [];
     if (data.alias)
         $.each(data.alias, function(i,n){
@@ -524,6 +531,7 @@ fbs.transform = function(data, q, options) {
             '<div class="fbs-li-aliases"></div>' +
             '<div class="fbs-li-name"></div>' +
             '<div class="fbs-li-types"></div>' +
+            '<div class="fbs-li-domains"></div>' +
             '<div class="fbs-li-props"></div>');
     if (aliases.length) {
         var text = $(".fbs-li-aliases", div).append(document.createTextNode("("+aliases+")")).text();
@@ -541,6 +549,11 @@ fbs.transform = function(data, q, options) {
         $(".fbs-li-types", div).append(document.createTextNode(types));
     else
         $(".fbs-li-types", div).remove();
+
+    if (domains.length)
+        $(".fbs-li-domains", div).append(document.createTextNode(domains));
+    else
+        $(".fbs-li-domains", div).remove();        
           
     if (props.length)
         $(".fbs-li-props", div).append(document.createTextNode(props));
@@ -827,13 +840,15 @@ fbs.flyout_show = function(li, options, img_src, blurb) {//fb.log("flyout_show",
                     '<div class="fbs-bottomshadow">'+
                         '<div class="fbs-flyout-container">' +
                             // label
-                            '<div class="fbs-flyout-name"></div>' +                        
+                            '<div class="fbs-flyout-name"></div>' +
                             // image
                             '<div class="fbs-flyout-image"></div>' +
                             // types
-                            '<div class="fbs-flyout-types"></div>' +                        
+                            '<div class="fbs-flyout-types"></div>' +
+                            // domains
+                            '<div class="fbs-flyout-domains"></div>' +
                             // blurb
-                            '<div class="fbs-flyout-blurb"></div>' +    
+                            '<div class="fbs-flyout-blurb"></div>' +
                         '</div>' +                                              
                     '</div>' +
                 '</div>');   
@@ -844,6 +859,7 @@ fbs.flyout_show = function(li, options, img_src, blurb) {//fb.log("flyout_show",
     if (img_src != "#")
         $("#fbs_flyout .fbs-flyout-image").append('<img src="' + img_src + '"/>');
     $("#fbs_flyout .fbs-flyout-types").empty().append($(".fbs-li-types", li).text());
+    $("#fbs_flyout .fbs-flyout-domains").empty().append($(".fbs-li-domains", li).text());
     $("#fbs_flyout .fbs-flyout-blurb").empty().append(blurb);
 
     var pos = $("#fbs_list > .fbs-bottomshadow > .fbs-ul").offset();

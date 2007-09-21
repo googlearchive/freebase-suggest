@@ -53,6 +53,7 @@
 
 .fbs-li-aliases,
 .fbs-li-types,
+.fbs-li-domains,
 .fbs-li-name,
 .fbs-li-props {
 	overflow: hidden;
@@ -61,7 +62,8 @@
 	display:block;
 }
 
-.fbs-li-types {
+.fbs-li-types,
+.fbs-li-domains {
 	color: #5d5d5d;
 	font-size: .9em;
 	font-style: italic;
@@ -135,7 +137,8 @@
 	margin-bottom: .5em;	
 }
 
-.fbs-flyout-types {
+.fbs-flyout-types,
+.fbs-flyout-domains {
 	font-size: .85em;
 	padding: 0;
 	margin:.3em 0 .3em 0 !important;
