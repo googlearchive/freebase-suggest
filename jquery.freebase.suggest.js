@@ -241,6 +241,7 @@ fbs.manage = function(input) {//fb.log("manage", input);
 //        .keypress(fbs.on_keypress)
 //        .keyup(fbs.on_keyup);
     addEvent(input, "blur", fbs.on_blur);
+    addEvent(input, "keydown", fbs.on_keydown);
     addEvent(input, "keypress", fbs.on_keypress);
     addEvent(input, "keyup", fbs.on_keyup);
     fbs.sm.transition("start");        
@@ -253,6 +254,7 @@ fbs.release = function(input) {//fb.log("release", input);
 //        .unbind("keypress")
 //        .unbind("keyup");
     removeEvent(input, "blur", fbs.on_blur);
+    removeEvent(input, "keydown", fbs.on_keydown);
     removeEvent(input, "keypress", fbs.on_keypress);
     removeEvent(input, "keyup", fbs.on_keyup);
     fbs.sm.transition("start"); 
@@ -316,6 +318,18 @@ fbs.on_textchange_delay = function(input){//fb.log("on_textchange_delay", input)
     fbs.sm.handle({id:"TEXTCHANGE", input:input});
 };
 
+fbs.on_keydown = function(e) {//fb.log("on_keydown", e.keyCode);
+    switch(e.keyCode) {
+    	case 38: // up
+    	case 40: // down
+    	   // prevents cursor/caret from moving (in Safari)
+    	   e.preventDefault();
+    	   break;    
+    	default:
+    	   break;
+    }
+};
+
 fbs.on_keypress = function(e) {//fb.log("on_keypress", e.keyCode);
     switch(e.keyCode) {
     	case 38: // up
@@ -375,9 +389,10 @@ fbs.on_mouseup_list = function(e) {//fb.log("on_mouseup_list", e);
         removeEvent(fbs._input, "focus", fbs.on_focus);  
         $(fbs._input).focus();
         //$(fbs._input).focus(fbs.on_focus);
-        addEvent(fbs._input, "focus", fbs.on_focus);
+        window.setTimeout(addEvent, 0, fbs._input, "focus", fbs.on_focus);
+        //addEvent(fbs._input, "focus", fbs.on_focus);
     }
-    fbs.list_focused = false;  
+    fbs.list_focused = false; 
 };
 
 fbs.ac_error = function(errtype, messages, o) {
@@ -888,6 +903,21 @@ fbs.image_load = function(id, options, cb) {//fb.log("image_load", id, options, 
     i.src = src; 
 };
 
+fbs.caret_last = function(input) {
+    var p = fbs.val(input).length;
+    if (input.createTextRange) {
+        // IE
+        var range = input.createTextRange();;
+        range.collapse(true);
+        range.moveEnd("character", p);
+        range.moveStart("character", p);
+        range.select();
+    }
+    else if (input.setSelectionRange) {
+        // mozilla
+        input.setSelectionRange(p, p);
+    }    
+};
 
 fbs.blurb_path = function(id, options) {
     return options.blurb_path + fbs.quote_id(id);    
@@ -1154,6 +1184,7 @@ fbs.state_suggesting.prototype.handle = function(data) {//fb.log("state_suggesti
                 default:
                     var txt = $(".fbs-li-name", data.item).text();
                     $(data.input).val(txt);
+                    fbs.caret_last(data.input);
                     $(data.input).trigger("suggest", [{id:data.item.fb_id, name:txt}]);
                     fbs.list_hide();
                     break;
