@@ -3,8 +3,7 @@ Requires at least [http://code.google.com/p/jqueryjs/ jquery-1.2].
 freebaseSuggest() provides a way to attach Freebase suggestion behavior to a
 text input using the Freebase.com autocomplete service.
 
-freebaseSuggest accepts a single argument which is an options Object with
-the following attributes:
+freebaseSuggest accepts an optional argument which is a dictionary that could overwrite one or more default settings as described below.
 
 ||width||This is the width of the suggestion list and the flyout in pixels. Default is 275.||
 ||soft||Soft suggestion. If true, DO NOT auto-select first item in the suggestion list. Otherwise, select first item. Default is false.||
@@ -56,6 +55,8 @@ $('#myInput')
      .bind('suggest-submit', function(e, data) { console.log('suggest submit'); })
      .bind('suggest-new', function(e, data) { console.log('suggest new: ', data.name); });
 }}}
+ 
+ 
  
  
  
