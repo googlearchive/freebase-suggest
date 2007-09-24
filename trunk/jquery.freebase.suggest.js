@@ -576,10 +576,12 @@ fbs.create_list_item = function(data, q, options) {
     var html = trans.apply(null, [data, q, options]); 
    
     $(li).append(html);
+
+    // sometimes data contains text and/or name
+    if ("text" in data)
+        data.name = data.text;
     
-    li[0].fb_id = data.id;
-    li[0].fb_image = data.image;
-    li[0].fb_article = data.article;
+    li[0].fb_data = data;
         
     return li
         .mouseover(function(e) { 
@@ -714,8 +716,9 @@ fbs.list_select = function(index, li, options) {
         else 
             $(n).removeClass("fbs-li-selected");
     });
-        
-    if (sli && options && options.flyout && sli.fb_id != "NO_MATCHES")
+    
+    
+    if (sli && options && options.flyout && sli.fb_data && sli.fb_data.id != "NO_MATCHES")
         fbs.flyout(sli, options);
         
     return sli;
@@ -786,7 +789,7 @@ fbs.flyout = function(li, options) { //fb.log("flyout", li);
  * both thumbnail and blurb have been loaded.
  */
 fbs.flyout_resources = function(li, options) {//fb.log("flyout_resources", li);
-    if (!(li && "fb_id" in li && "fb_article" in li && "fb_image" in li))
+    if (!(li && li.fb_data && "id" in li.fb_data && "article" in li.fb_data && "image" in li.fb_data))
         return;
     var cb = function(data_type, data) {
         //fb.log("callback", data_type, data);
@@ -810,14 +813,14 @@ fbs.flyout_resources = function(li, options) {//fb.log("flyout_resources", li);
     cb.blurb = null;
     
     // load article
-    if (li.fb_article && li.fb_article.id)
-        fbs.blurb_load(li.fb_article.id, options, cb);
+    if (li.fb_data.article && li.fb_data.article.id)
+        fbs.blurb_load(li.fb_data.article.id, options, cb);
     else
         cb.apply(null, ["blurb", "&nbsp;"]);
     
     // load image
-    if (li.fb_image && li.fb_image.id)
-        fbs.image_load(li.fb_image.id, options, cb);
+    if (li.fb_data.image && li.fb_data.image.id)
+        fbs.image_load(li.fb_data.image.id, options, cb);
     else
         cb.apply(null, ["image", "#"]);
 };
@@ -854,7 +857,7 @@ fbs.flyout_show = function(li, options, img_src, blurb) {//fb.log("flyout_show",
                 '</div>');   
     }
     
-    $("#fbs_flyout .fbs-flyout-name").empty().append('<a href="' + fbs.freebase_url(li.fb_id, options) + '">' + $(".fbs-li-name", li).text() + '</a>');
+    $("#fbs_flyout .fbs-flyout-name").empty().append('<a href="' + fbs.freebase_url(li.fb_data.id, options) + '">' + $(".fbs-li-name", li).text() + '</a>');
     $("#fbs_flyout .fbs-flyout-image").empty();
     if (img_src != "#")
         $("#fbs_flyout .fbs-flyout-image").append('<img src="' + img_src + '"/>');
@@ -1181,9 +1184,8 @@ fbs.state_suggesting.prototype.handle = function(data) {//fb.log("state_suggesti
             }
             if ($("#fbs_list").css("display") != "none")
                 data.domEvent.preventDefault();
-            else {
-                var txt = $(".fbs-li-name", s.item).text();
-                $(data.input).trigger("suggest-submit", [{id:s.item.fb_id, name:txt}]);
+            else {              
+                $(data.input).trigger("suggest-submit", [s.item.fb_data]);
                 return;   
             }
              
@@ -1194,14 +1196,14 @@ fbs.state_suggesting.prototype.handle = function(data) {//fb.log("state_suggesti
         case "LISTITEM_CLICK":
             if (!data.item) 
                 return;
-            switch(data.item.fb_id) {
+            switch(data.item.fb_data.id) {
                 case "NO_MATCHES":
                     break;
                 default:
                     var txt = $(".fbs-li-name", data.item).text();
                     $(data.input).val(txt);
                     fbs.caret_last(data.input);
-                    $(data.input).trigger("suggest", [{id:data.item.fb_id, name:txt}]);
+                    $(data.input).trigger("suggest", [data.item.fb_data]);
                     fbs.list_hide();
                     break;
             }            
