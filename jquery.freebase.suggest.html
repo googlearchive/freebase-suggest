@@ -12,22 +12,22 @@
 			$("#soft_input")
 				.freebaseSuggest({soft:true})
 				.bind("suggest", function(e, data) {
-					log("suggest id: " , data.id , ", name: " , data.name);
+					log("suggest id: " , data.id , ", name: " , data.name, data);
 				})
 				.bind("suggest-submit", function(e, data) {
-					log("suggest submit id: " , data.id ,  ", name: " , data.name);
+					log("suggest submit id: " , data.id ,  ", name: " , data.name, data);
 				});		
 
 			$("#hard_input")
 				.freebaseSuggest({soft:false, suggest_new:"Suggest new topic"})
 				.bind("suggest", function(e, data) {
-					log("suggest id: " , data.id , ", name: " , data.name);
+					log("suggest id: " , data.id , ", name: " , data.name, data);
 				})
 				.bind("suggest-submit", function(e, data) {
-					log("suggest submit id: " , data.id ,  ", name: " , data.name);
+					log("suggest submit id: " , data.id ,  ", name: " , data.name, data);
 				})
 				.bind("suggest-new", function(e, data) {
-					log("suggest new name: "  , data.name);
+					log("suggest new name: "  , data.name, data);
 				});									
 		});
 		
