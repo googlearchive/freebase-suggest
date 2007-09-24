@@ -582,7 +582,8 @@ fbs.create_list_item = function(data, q, options) {
         data.name = data.text;
     
     li[0].fb_data = data;
-        
+    autoclean(li, li_clean);
+    
     return li
         .mouseover(function(e) { 
             fbs.list_select(null, this, options); 
@@ -1270,6 +1271,11 @@ function image_clean(i) {
     if (i)
         i.onload = i.onerror = null;
 };
+
+function li_clean(li) {
+    if (li) 
+        delete li.fb_data;        
+}
 
 // ---------------------------------------------------- autoclean
 var AUTOCLEAN_HEAP = {};
