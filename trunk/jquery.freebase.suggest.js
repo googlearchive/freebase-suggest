@@ -358,6 +358,7 @@ fbs.on_keyup = function(e) {//fb.log("on_keyup", e.keyCode);
     		e.preventDefault();
     		fbs.on_downarrow(e);
     		break;
+        case  9: // tab    		
         case 13: // enter
         case 16: // ctrl
         case 17: // shift
