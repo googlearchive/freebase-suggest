@@ -62,16 +62,18 @@
  * service_url: This the base url to all the api services like autocomplete,
  *              blurbs and thumbnails. Default is "http://www.freebase.com".
  * 
- * ac_path:     The path to the autcomplete service. 
- *              Default is "/api/service/autocomplete".
+ * ac_path:     The path to the autcomplete service. Default is "/api/service/search".
  * 
- * ac_param:    The query parameters to the autocomplete service. NOTE: until
- *              we flush out the Freebase autocomplete service, these 
- *              parameters will most likely to change.
+ * ac_param:    A dicionary of query parameters to the autocomplete service. 
+ *              Currently, the supported parameters are 
+ *              query (required) - the string to do an auto-complete on. See ac_qstr
+ *              type  (optional) - type of items to match for (ie, "/film/film")
+ *              limit (optional) - the maximum number of results to return, default is 20
+ *              start (optional) - offset from which to start returning results, default is 0
  * 
  * ac_qstr:     This is the parameter name to be passed to the autocomplete
  *              service for the string to autocomplete on. The value will
- *              be what the user typed in the input. Default is "prefix".
+ *              be what the user typed in the input. Default is "query".
  * 
  * blurb_path:  The path to the blurb service for the description to be shown
  *              in the flyout. Default is "/api/trans/blurb".
@@ -201,15 +203,13 @@ fb.suggest = {
         suggest_new: null, // to show suggest new option, set text to something (eg, "Create new topic")
         flyout: true,  // show flyout on the side of highlighted item
         service_url: "http://www.freebase.com",
-        ac_path: "/api/service/autocomplete",
+        ac_path: "/api/service/search",
         ac_param: {
             type: "/common/topic",
-            category: "instance",
-            get_all_types: "0",
-            disamb: "1",
-            limit: "10"
+            start: 0,
+            limit: 20
         },
-        ac_qstr: "prefix",  // this will be added to the ac_param ...&prefix=str
+        ac_qstr: "query",  // this will be added to the ac_param ...&prefix=str
         blurb_path: "/api/trans/blurb",
         blurb_param: {
             maxlength: 300
@@ -226,7 +226,8 @@ fb.suggest = {
     option_hash: {},
     manage_delay: 200,
     release_delay: 100, 
-    flyout_delay: 0
+    flyout_delay: 0,
+    loadmsg_delay: 500
 };
 
 /**
@@ -257,6 +258,7 @@ fbs.release = function(input) {//fb.log("release", input);
     removeEvent(input, "keydown", fbs.on_keydown);
     removeEvent(input, "keypress", fbs.on_keypress);
     removeEvent(input, "keyup", fbs.on_keyup);
+    fbs.list_hide();
     fbs.sm.transition("start"); 
 };
 
@@ -401,7 +403,7 @@ fbs.ac_error = function(errtype, messages, o) {
     fb.error("ac_error", errtype, messages, o);
 };
 
-fbs.ac_receive = function(input, o) {
+fbs.ac_receive = function(input, query, o) {
     // handle errors
     if (o.status !== '200 OK') {
         fbs.ac_error(o.code, o.messages, o);
@@ -435,11 +437,12 @@ fbs.ac_receive = function(input, o) {
     if ("prefix" in o)
         qstr = o.prefix;
     else if("query" in o)
-        qstr = o.query;
-    else {
-        fbs.ac_error(o.code, "Unrecognized autocomplete result", o);
-        return;
-    }
+        if (typeof o.query == "object")
+            qstr = o.query.query;
+        else
+            qstr = o.query;
+    else
+        qstr = query;
 
     // update cache
     if (!fbs.cache[input.fbs_id]) fbs.cache[input.fbs_id] = {};
@@ -473,7 +476,7 @@ fbs.ac_load = function(input) {//fb.log("ac_load", input);
         type: "GET",
 		url: options.service_url + options.ac_path,
 		data: param,
-		success: delegate(fbs.ac_receive, null, [input]),
+		success: delegate(fbs.ac_receive, null, [input, txt]),
 		dataType: "jsonp",
 		cache: true
 	});
@@ -598,6 +601,7 @@ fbs.create_list_item = function(data, q, options) {
  * show loading message
  */
 fbs.loading_show = function(input) {
+    fbs.list_hide();
     if (!$("#fbs_loading").length) {
         $(document.body)        
             .append(
@@ -815,14 +819,14 @@ fbs.flyout_resources = function(li, options) {//fb.log("flyout_resources", li);
     cb.blurb = null;
     
     // load article
-    if (li.fb_data.article && li.fb_data.article.id)
-        fbs.blurb_load(li.fb_data.article.id, options, cb);
+    if (li.fb_data.article)
+        fbs.blurb_load(typeof li.fb_data.article == "object" ?  li.fb_data.article.id : li.fb_data.article, options, cb);
     else
         cb.apply(null, ["blurb", "&nbsp;"]);
     
     // load image
-    if (li.fb_data.image && li.fb_data.image.id)
-        fbs.image_load(li.fb_data.image.id, options, cb);
+    if (li.fb_data.image)        
+        fbs.image_load(typeof li.fb_data.image == "object"? li.fb_data.image.id : li.fb_data.image, options, cb);
     else
         cb.apply(null, ["image", "#"]);
 };
@@ -1110,14 +1114,15 @@ fbs.state_getting.prototype = new fb.state();
 fbs.state_getting.prototype.enter = function(data) {//fb.log("state_getting.enter", data); 
     if (!data || !data.input) 
         return;
-    // show loading msg   
-    fbs.loading_show(data.input);         
+    // show loading msg
+    //fbs.loading_show(data.input);         
+    fbs.loadmsg_timeout = window.setTimeout(fbs.loading_show, fbs.loadmsg_delay, data.input);    
     // request autocomplete url
     fbs.ac_load(data.input);
 };
 fbs.state_getting.prototype.exit = function(data) {//fb.log("state_getting.exit", data); 
     // hide loading msg
-    $(".fbs-loading").hide();
+    window.clearTimeout(fbs.loadmsg_timeout);
     fbs.loading_hide();
 };
 fbs.state_getting.prototype.handle = function(data) {//fb.log("state_getting.handle", data);
@@ -1135,6 +1140,7 @@ fbs.state_getting.prototype.handle = function(data) {//fb.log("state_getting.han
             $(data.input).trigger("suggest-submit", [{name:fbs.val(data.input)}]);            
             break;
         case "ESCAPEKEY":
+            fbs.list_hide();
             this.sm.transition("start");
             break;            
         default:
@@ -1158,7 +1164,9 @@ fbs.state_suggesting.prototype.enter = function(data) {//fb.log("state_suggestin
         fbs.list_select(0, null, options);
 };
 fbs.state_suggesting.prototype.exit = function(data) {//fb.log("state_suggesting.exit", data);    
-    fbs.list_hide();
+    //fbs.list_hide();
+    fbs.flyout_hide();
+    fbs.list_select(null);
 };
 fbs.state_suggesting.prototype.handle = function(data) {//fb.log("state_suggesting.handle", data);
     if (!data || !data.input) 
@@ -1211,6 +1219,7 @@ fbs.state_suggesting.prototype.handle = function(data) {//fb.log("state_suggesti
             }            
             break;
         case "ESCAPEKEY":
+            fbs.list_hide();
             this.sm.transition("start");
             break;            
         default:
