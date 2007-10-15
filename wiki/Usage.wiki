@@ -10,9 +10,13 @@ freebaseSuggest accepts an optional argument which is a dictionary that could ov
 ||suggest_new||To enable a suggest new option, set text to a non-null string. This is the string displayed for the suggest new option (eg, "Create new topic"). Default is null.||
 ||flyout||To enable flyout to show additional information for the currently highlighted item including a thumbnail and blurb. Default is true.||
 ||service_url||This the base url to all the api services like autocomplete, blurbs and thumbnails. Default is "http://www.freebase.com".||
-||ac_path||The path to the autcomplete service. Default is "/api/service/autocomplete".||
-||ac_param||The query parameters to the autocomplete service. NOTE: until we flush out the Freebase autocomplete service, these parameters will most likely to change.||
-||ac_qstr||This is the parameter name to be passed to the autocomplete service for the string to autocomplete on. The value will be what the user typed in the input. Default is "prefix".||
+||ac_path||The path to the autcomplete service. Default is "/api/service/search".||
+||ac_param||A dicionary of query parameters to the autocomplete service. Currently, the supported parameters are 
+* query (required) - the string to do an auto-complete on. See ac_qstr
+* type  (optional) - type of items to match for (ie, "/film/film")
+* limit (optional) - the maximum number of results to return, default is 20
+* start (optional) - offset from which to start returning results, default is 0||
+||ac_qstr||This is the parameter name to be passed to the autocomplete service for the string to autocomplete on. The value will be what the user typed in the input. Default is "query".||
 ||blurb_path||The path to the blurb service for the description to be shown in the flyout. Default is "/api/trans/blurb".||
 ||blurb_param||The query parameters to the blurb service. Default is { maxlength: 300 }.||
 ||thumbnail_path||The path to the thumbnail service to be shown in the flyout. Default is "/api/trans/image_thumb".||
@@ -43,16 +47,11 @@ var options = {
      suggest_new: 'Create new Film',
      ac_param: {
          type: '/film/film',
-         category: 'instance',
-         get_all_types: '0',
-         disamb: '1',
-         limit: '10'
      }
 };
 $('#myInput')
      .freebaseSuggest(options)
      .bind('suggest', function(e, data) { console.log('suggest: ', data.id); })
-     .bind('suggest-submit', function(e, data) { console.log('suggest submit'); })
      .bind('suggest-new', function(e, data) { console.log('suggest new: ', data.name); });
 }}}
  
