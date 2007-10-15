@@ -105,10 +105,8 @@
  *                  list. The data object will contain id and name fields:
  *                  { id: aString, name: aString }.
  * 
- * suggest-none:    Triggered when nothing is selected from the list. When a
- *                  user presses the enter key, when nothing is selected
- *                  in the suggestion list. The data object will only contain
- *                  a name field: { name: aString }.
+ * suggest-new:    	Triggered when the suggest_new option is selected. 
+ *                  The data object will only contain a name field: { name: aString }.
  * 
  * suggest-submit   Triggered when user presses enter key after selecting from
  *                  list or when nothing is highlighted from the list (soft).
@@ -130,16 +128,11 @@
  *      suggest_new: 'Create new Film',
  *      ac_param: {
  *          type: '/film/film',
- *          category: 'instance',
- *          get_all_types: '0',
- *          disamb: '1',
- *          limit: '10'
  *      }
  * };
  * $('#myInput')
  *      .freebaseSuggest(options)
  *      .bind('suggest', function(e, data) { console.log('suggest: ', data.id); })
- *      .bind('suggest-none', function(e, data) { console.log('suggest none: ', data.name); })
  *      .bind('suggest-new', function(e, data) { console.log('suggest new: ', data.name); });
  * 
  * @desc Soft suggestion on instances of '/film/film' with a suggest new option and
