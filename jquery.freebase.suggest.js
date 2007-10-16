@@ -687,6 +687,7 @@ fbs.list_show = function(input, result) {//fb.log("list_show", input, result);
             })
             .click(function(e) {
                 $(input).trigger("suggest-new", [{name:fbs.val(input)}]);
+                fbs.list_hide();                
                 fbs.sm.transition("start"); 
             });
     }
