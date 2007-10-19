@@ -1,0 +1,11 @@
+COPYRIGHT - copyright notice
+README - this readme
+jquery.freebase.suggest.css - default styles for suggest list and flyout
+Jquery.freebase.suggest.html - sample html using this plugin
+jquery.freebase.suggest.js - plugin javascript source
+jquery.freebase.suggest.shadow.bottom.right.png - used by default style
+jquery.freebase.suggest.shadow.top.left.png - used by default style
+
+This plugin requires jquery-1.2 or higher (http://jquery.com/).
+
+Please look at the sample html file to get started.
