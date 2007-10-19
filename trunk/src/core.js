@@ -316,7 +316,7 @@ fb.InputControl.prototype = {
         this.manage_timeout = window.setTimeout(this.delegate("manage", [input]), this.manage_delay);     
     },
 
-    blur: function(e) {//fb.log("on_blur", e.target, this); 
+    blur: function(e) {fb.log("on_blur", e.target, this, this.dont_release, this._input); 
         window.clearTimeout(this.release_timeout);
         var input = $(e.target)[0];
         if (this.dont_release) {
@@ -451,12 +451,12 @@ p.click_listitem = function(li) {//fb.log("click_listitem", li, this._input);
     this.handle({id:"LISTITEM_CLICK", item:li, input:this._input});
 };
 
-p.mousedown_list = function(e) {//fb.log("mousedown_list", e);
+p.mousedown_list = function(e) {fb.log("mousedown_list", e, this);
     // hack in IE/safari to keep suggestion list from disappearing when click/scrolling
     this.dont_release = true;    
 };
 
-p.mouseup_list = function(e) {//fb.log("mouseup_list", e);
+p.mouseup_list = function(e) {fb.log("mouseup_list", e, this, this._input);
     // hack in IE/safari to keep suggestion list from disappearing when click/scrolling
     if (this._input) {
         $(this._input).unbind("focus", this.delegate("focus")); 
@@ -464,14 +464,11 @@ p.mouseup_list = function(e) {//fb.log("mouseup_list", e);
         window.setTimeout(this.delegate("reset_focus", [this._input]), 0);
         //$(this._input).focus(this.delegate("focus"));
     }
-    else {
     this.dont_release = false;
-    }
 };
 
 p.reset_focus = function(input) {
     $(input).focus(this.delegate("focus"));
-    this.dont_release = false;
 };
 
 p.list_load = function(input) {//fb.log("list_load", input);
@@ -527,14 +524,18 @@ p.list_show = function(input, result) {//fb.log("list_show", input, result);
                         '<ul class="fbs-ul"></ul>' +
                     '</div>' +
                 '</div>');
-        $("#fbs_list > .fbs-bottomshadow")
-            .mousedown(this.delegate("mousedown_list"))
-            .mouseup(this.delegate("mouseup_list"))
-            .scroll(this.delegate("mousedown_list"));
+
         list = $("> .fbs-ul")[0];
     }
     if (!list) 
         list = $("#fbs_list > .fbs-bottomshadow > .fbs-ul")[0];
+
+    $("#fbs_list > .fbs-bottomshadow")
+        .unbind()
+        .mousedown(this.delegate("mousedown_list"))
+        .mouseup(this.delegate("mouseup_list"))
+        .scroll(this.delegate("mousedown_list"));
+
     
     // unbind all li events and empty list
     $("li", list)
