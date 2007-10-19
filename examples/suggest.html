@@ -11,23 +11,23 @@
 		jQuery(function($) {
 			$("#soft_input")
 				.freebaseSuggest({soft:true})
-				.bind("suggest", function(e, data) {
-					mylog("suggest id: " , data.id , ", name: " , data.name, data);
+				.bind("fb-select", function(e, data) {
+					mylog("select id: " , data.id , ", name: " , data.name, data);
 				})
-				.bind("suggest-submit", function(e, data) {
-					mylog("suggest submit id: " , data.id ,  ", name: " , data.name, data);
+				.bind("fb-submit", function(e, data) {
+					mylog("submit id: " , data.id ,  ", name: " , data.name, data);
 				});		
 
 			$("#hard_input")
 				.freebaseSuggest({soft:false, suggest_new:"Suggest new topic"})
-				.bind("suggest", function(e, data) {
-					mylog("suggest id: " , data.id , ", name: " , data.name, data);
+				.bind("fb-select", function(e, data) {
+					mylog("select id: " , data.id , ", name: " , data.name, data);
 				})
-				.bind("suggest-submit", function(e, data) {
-					mylog("suggest submit id: " , data.id ,  ", name: " , data.name, data);
+				.bind("fb-submit", function(e, data) {
+					mylog("submit id: " , data.id ,  ", name: " , data.name, data);
 				})
-				.bind("suggest-new", function(e, data) {
-					mylog("suggest new name: "  , data.name, data);
+				.bind("fb-select-new", function(e, data) {
+					mylog("select new name: "  , data.name, data);
 				});									
 		});
 		
