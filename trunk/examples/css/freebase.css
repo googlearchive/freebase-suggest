@@ -6,7 +6,7 @@
 	display:block;
 	z-index:1000;
 	position:absolute;
-	background: url('jquery.freebase.suggest.shadow.top.left.png') no-repeat top left;
+	background: url('shadow-top-left.png') no-repeat top left;
 }
 
 .fbs-bottomshadow {
@@ -14,7 +14,7 @@
   right: -4px;
   bottom: -4px;
   padding: 0px 4px 4px 0px;
-  background: url('jquery.freebase.suggest.shadow.bottom.right.png') no-repeat bottom right;   
+  background: url('shadow-bottom-right.png') no-repeat bottom right;   
 }
 * html .fbs-bottomshadow, 
 * html .fbs-topshadow {
@@ -96,7 +96,7 @@
 	font-style: italic;
 } 
 
-.fbs-suggestnew {
+.fbs-selectnew {
 	cursor: pointer;
 	margin: 0px;
 	padding: 3px 0px 3px 4px;
@@ -110,12 +110,12 @@
 }
 
 .fbs-li-selected,
-.fbs-suggestnew-selected {
+.fbs-selectnew-selected {
 	background-color:#97bedf;
 	color: #000000;
 }
 
-.fbs-suggestnew-selected {
+.fbs-selectnew-selected {
 	text-decoration: underline;	
 }
 
