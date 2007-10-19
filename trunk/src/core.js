@@ -316,7 +316,7 @@ fb.InputControl.prototype = {
         this.manage_timeout = window.setTimeout(this.delegate("manage", [input]), this.manage_delay);     
     },
 
-    blur: function(e) {fb.log("on_blur", e.target, this, this.dont_release, this._input); 
+    blur: function(e) {//fb.log("on_blur", e.target, this, this.dont_release, this._input); 
         window.clearTimeout(this.release_timeout);
         var input = $(e.target)[0];
         if (this.dont_release) {
@@ -451,12 +451,12 @@ p.click_listitem = function(li) {//fb.log("click_listitem", li, this._input);
     this.handle({id:"LISTITEM_CLICK", item:li, input:this._input});
 };
 
-p.mousedown_list = function(e) {fb.log("mousedown_list", e, this);
+p.mousedown_list = function(e) {//fb.log("mousedown_list", e, this);
     // hack in IE/safari to keep suggestion list from disappearing when click/scrolling
     this.dont_release = true;    
 };
 
-p.mouseup_list = function(e) {fb.log("mouseup_list", e, this, this._input);
+p.mouseup_list = function(e) {//fb.log("mouseup_list", e, this, this._input);
     // hack in IE/safari to keep suggestion list from disappearing when click/scrolling
     if (this._input) {
         $(this._input).unbind("focus", this.delegate("focus")); 
