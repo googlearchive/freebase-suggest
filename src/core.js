@@ -3,21 +3,7 @@
  * 
  * Version @VERSION
  */
- 
-// Map over freebase in case of overwrite
-if ( typeof freebase != "undefined" )
-	var _freebase = freebase;
 
-var freebase = window.freebase = {};
-
-// Map over the fb in case of overwrite
-if ( typeof fb != "undefined" )
-	var _fb = fb;
-	
-// Map the jQuery namespace to the '$' one
-window.fb = freebase;
-
-(function($) {
 
 /**
  * Apply the specified input control behavior to an input with the specified options
@@ -947,7 +933,5 @@ state_selecting.prototype.handle = function(data) {//fb.log("state_selecting.han
             break;
     };
 };
-
-})(jQuery);
 
 

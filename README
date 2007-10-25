@@ -20,15 +20,15 @@ In the main directory of the distribution (the one that this file is in), type
 the following to make all versions of Freebase input controls.
   make
 
-make freebase
+make
   Contains all Freebase input controls like suggest and select
-  Makes: ./dist/freebase.js
+  Makes: ./dist/freebase.controls.js
 
 make suggest
   Freebsae suggest control (autocomplete on a Freebase topic)
   Makes: ./dist/freebase.suggest.js
 
-make pack
+make select
   Freebsae select control (enumeration of Freebase topics of a certain type)
   Makes: ./dist/freebase.select.js
 
