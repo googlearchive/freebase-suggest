@@ -1,5 +1,3 @@
-(function($, fb) {
-
 /**
  * freebaseSuggest() provides a way to attach Freebase suggestion behavior to a
  * text input using the Freebase.com autocomplete service.
@@ -106,10 +104,9 @@
  * @type   jQuery
  */
 $.fn.freebaseSuggest = function(options) {
-    return $(this)._freebaseInput(window.freebase.suggest.getInstance(), options);
+    return $(this)._freebaseInput(fb.suggest.getInstance(), options);
 };
 
-    
 /**
  * SuggestControl class
  * superClass: InputSelectControl
@@ -473,7 +470,5 @@ p.quote_id = function(id) {
         return ('/' + encodeURIComponent(id));
 };
 
-window.freebase.suggest = SuggestControl;
-
-})(jQuery, freebase);
+fb.suggest = SuggestControl;
 

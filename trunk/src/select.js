@@ -1,5 +1,3 @@
-(function($, fb) {
-
 /**
  * freebaseSelect() allows one to select from an enumeration of freebase topics
  * of a certain freebase type under an input box.
@@ -40,11 +38,8 @@
  * @type   jQuery
  */
 $.fn.freebaseSelect = function(options) {
-    return $(this)._freebaseInput(window.freebase.select.getInstance(), options);
+    return $(this)._freebaseInput(fb.select.getInstance(), options);
 };
-
-// shorthand for window.freebase
-var fb = window.freebase;
 
 function SelectControl() { 
     fb.InputSelectControl.call(this);
@@ -141,7 +136,7 @@ p.delay = function(l) {
     return 0;
 };
 
-window.freebase.select = SelectControl;
+fb.select = SelectControl;
 
-})(jQuery, freebase);
+
 

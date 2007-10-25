@@ -6,15 +6,24 @@ COPYRIGHT = ${PREFIX}/COPYRIGHT
 DIST_DIR = ${PREFIX}/dist
 EXAMPLES = ${PREFIX}/examples
 
-ALL_FILES = ${SRC_DIR}/core.js\
-	${SRC_DIR}/suggest.js\
-	${SRC_DIR}/select.js
-	
-SUGGEST_FILES = ${SRC_DIR}/core.js\
-	${SRC_DIR}/suggest.js
+INTRO_JS = ${SRC_DIR}/intro.js
+OUTRO_JS = ${SRC_DIR}/outro.js
 
-SELECT_FILES = ${SRC_DIR}/core.js\
-	${SRC_DIR}/select.js	
+ALL_FILES = ${SRC_DIR}/intro.js \
+	${SRC_DIR}/core.js \
+	${SRC_DIR}/suggest.js \
+	${SRC_DIR}/select.js \
+	${SRC_DIR}/outro.js
+	
+SUGGEST_FILES = ${SRC_DIR}/intro.js \
+	${SRC_DIR}/core.js \
+	${SRC_DIR}/suggest.js \
+	${SRC_DIR}/outro.js
+
+SELECT_FILES = ${SRC_DIR}/intro.js \
+	${SRC_DIR}/core.js \
+	${SRC_DIR}/select.js \
+	${SRC_DIR}/outro.js
 
 CONTROLS = ${DIST_DIR}/freebase.controls.js
 SUGGEST = ${DIST_DIR}/freebase.suggest.js
