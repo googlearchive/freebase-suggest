@@ -103,6 +103,7 @@
 	text-align: left;
 	font-style: italic;
 	color: #275789;	
+	border: 1px solid #808080;
 	background-color: #ffffff;
 	filter:alpha(opacity=90);
 	-moz-opacity:.90;
