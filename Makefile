@@ -37,13 +37,7 @@ all: controls suggest select
 
 ${DIST_DIR}:
 	@@mkdir -p ${DIST_DIR}
-	
-	@@echo "Copying" ${EXAMPLES}
-
-	@@cp -r ${EXAMPLES}/* ${DIST_DIR}
-
-	@@echo ${EXAMPLES} "Copied"
-	@@echo
+	@@cp -r ${CSS_DIR} ${DIST_DIR}
 
 controls: ${CONTROLS}
 
