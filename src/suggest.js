@@ -212,7 +212,8 @@ p.list_show_hook = function(list, input, options) {
                 $(this).removeClass("fbs-selectnew-selected");
             })
             .click(function(e) {
-                $(input).trigger("fb-select-new", [{name:owner.val(input)}]);
+                $(input).trigger("fb-select-new", [{name:owner.val(input)}])
+                    .trigger("suggest-new", [{name:owner.val(input)}]); // legacy - for compatibility
                 owner.list_hide();
                 owner.transition("start");
             });
@@ -355,7 +356,8 @@ p.flyout_hide = function() {//fb.log("flyout_hide");
 p.flyout_show = function(li, options, img_src, blurb) {//fb.log("flyout_show", li, img_src, blurb);
     if ("none" == $("#fbs_list").css("display")) 
         return;
-    if (li != this.list_selection().item) 
+    var s = this.list_selection().item;
+    if (!(li == s && li.fb_data.id == s.fb_data.id))
         return;
 
     if (!$("#fbs_flyout").length) {

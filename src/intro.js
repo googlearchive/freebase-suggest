@@ -1,13 +1,11 @@
  
 // Use existing freebase namespace
 // if it exists
-if (typeof window.freebase == "undefined")
+if (!window.freebase)
     window.freebase = {};
 
-if (typeof window.freebase.controls != "undefined")
-    window.freebase._controls = window.freebase.controls;
-
-window.freebase.controls = {};
+if (!window.freebase.controls)
+    window.freebase.controls = {};
 
 (function($, fb) {
 
