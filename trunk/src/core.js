@@ -920,7 +920,8 @@ state_selecting.prototype.handle = function(data) {//fb.log("state_selecting.han
                     var txt = $(".fbs-li-name", data.item).text();
                     $(data.input).val(txt);
                     this.c.caret_last(data.input);
-                    $(data.input).trigger("fb-select", [data.item.fb_data]);
+                    $(data.input).trigger("fb-select", [data.item.fb_data])
+                        .trigger("suggest", [data.item.fb_data]); // legacy - for compatibility
                     this.c.list_hide();
                     break;
             }            
