@@ -170,7 +170,8 @@ p.list_load = function(input) {//fb.log("list_load", input);
     var options = this.options(input);
     var txt = this.val(input);
     var param = options.ac_param;
-    param[options.ac_qstr] = txt;
+    //TODO: remove star and change ac_qstr when search gets the same params as autocomplete
+    param[options.ac_qstr] = txt + '*'; // the search api needs a '*' to perform auto-complete rather than search.
     $.ajax({
         type: "GET",
 		url: options.service_url + options.ac_path,
