@@ -494,6 +494,11 @@ p.list_receive = function(input, txt, o) {//fb.log("list_receive", input, query,
     this.handle({id:"LIST_RESULT", input:input, result:result});
 };
 
+p.list_receive_hook = function(input, txt, result) { 
+    // overwrite to process search result
+    // like updating the cache
+};
+
 p.list_show = function(input, result) {//fb.log("list_show", input, result);
     if (!input) 
         return;
@@ -574,9 +579,8 @@ p.list_hide = function() {//fb.log("list_hide");
 p.list_hide_hook = function() {};
 
 p.create_list_item = function(data, txt, options) {
-    var frag = document.createDocumentFragment();
-    $(frag).append('<li class="fbs-li"></li>');
-    var li = $("> li", frag);
+    var li = document.createElement("li");
+    $(li).addClass("fbs-li");
     
     var trans = this.transform;
     if (typeof options.transform == "function")
@@ -590,11 +594,11 @@ p.create_list_item = function(data, txt, options) {
     if ("text" in data)
         data.name = data.text;
     
-    li[0].fb_data = data;
+    li.fb_data = data;
     fb.autoclean(li, fb.clean_expando);
     
     var owner = this;
-    return li
+    return $(li)
         .mouseover(function(e) { 
             owner.list_select(null, this, options); 
         })
