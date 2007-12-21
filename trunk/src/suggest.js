@@ -177,7 +177,7 @@ p.list_load = function(input) {//fb.log("list_load", input);
 		url: options.service_url + options.ac_path,
 		data: param,
 		success: this.delegate("list_receive", [input, txt]),
-		dataType: "jsonp",
+		dataType: use_jsonp(options) ? "jsonp": "json",
 		cache: true
 	});
 };
@@ -404,19 +404,26 @@ p.flyout_show = function(li, options, img_src, blurb) {//fb.log("flyout_show", l
 };
 
 p.blurb_receive = function(id, cb, o) {
-    // handle errors
-    if (o.status !== '200 OK') {
-        fb.error("SuggestControl.blurb_receive", o.code, o.messages, o);
-        return;
+    // depending on if this is a jsonp or null/raw dataType, o may be an
+    // object or a string
+	if (typeof o == "object") {
+        // handle errors
+        if (o.status !== '200 OK') {
+            fb.error("SuggestControl.blurb_receive", o.code, o.messages, o);
+            return;
+        }
+
+        // now get the string value
+        o = o.result.body;
     }
-    var result = o.result.body
+
     // update cache
-    this.cache[id] = result;
+    this.cache[id] = o;
     // handle result    
-    cb.apply(null, ["blurb", result]);    
+    cb.apply(null, ["blurb", o]);
 };
 
-p.blurb_load = function(id, options, cb) {//fb.log("blurb_load", id, options, cb, cb_args);
+p.blurb_load = function(id, options, cb) {
     // look in cache
     if (id in this.cache) {
         cb.apply(null, ["blurb", this.cache[id]]);
@@ -427,7 +434,7 @@ p.blurb_load = function(id, options, cb) {//fb.log("blurb_load", id, options, cb
 		url: options.service_url + this.blurb_path(id, options),
 		data: options.blurb_param,
 		success: this.delegate("blurb_receive", [id,cb]),
-		dataType: "jsonp",
+		dataType: use_jsonp(options) ? "jsonp" : null,
 		cache: true
 	});
 };
