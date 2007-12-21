@@ -99,7 +99,7 @@ p.list_load = function(input) {//fb.log("list_load", input);
 		url: options.service_url + options.mqlread_path,
 		data: param,
 		success: this.delegate("list_receive", [input, txt]),
-		dataType: "jsonp",
+		dataType: use_jsonp(options) ? "jsonp" : "json",
 		cache: true
 	});
 };
