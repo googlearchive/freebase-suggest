@@ -948,7 +948,7 @@ function use_jsonp(options) {
     var pathname_len = window.location.pathname.length;
     var hostname = window.location.href;
     var hostname = hostname.substr(0, hostname.length - pathname_len);
-    console.log("Hostname = ", hostname);
+    //console.log("Hostname = ", hostname);
     if (hostname == options.service_url)
         return false;
 

@@ -134,8 +134,7 @@ function SuggestControl() {
         thumbnail_param: {},
         filter: null,
         transform: null
-    };
-    this.flyout_delay = 0;      
+    }; 
 };
 // inheritance: prototype/constructor chaining
 SuggestControl.prototype = new fb.InputSelectControl();
@@ -302,9 +301,8 @@ p.transform = function(data, txt) {
 };
 
 p.flyout = function(li, options) { //fb.log("flyout", li);
-    window.clearTimeout(this.flyout_timeout); 
     this.flyout_hide();
-    this.flyout_timeout = window.setTimeout(this.delegate("flyout_resources", [li, options]), this.flyout_delay);        
+    this.flyout_callback = this.flyout_resources(li, options);     
 };
 
 /**
@@ -315,27 +313,17 @@ p.flyout_resources = function(li, options) {//fb.log("flyout_resources", li);
     if (!(li && li.fb_data && "id" in li.fb_data && "article" in li.fb_data && "image" in li.fb_data))
         return;
     var owner = this;
-    var cb = function(data_type, data) {
-        //fb.log("callback", data_type, data);
-        switch (data_type) {
-            case "image":
-                arguments.callee.image = data;
-                break;
-            case "blurb":
-                arguments.callee.blurb = data;
-                break;
-            default:
-                break;    
-        }
+    var cb = function(data_type, data) {//fb.log("callback", data_type, data);    
+        // data_type: "image", "blurb", "disable"
+        arguments.callee[data_type] = data;        
+        if (arguments.callee.disable)
+            return;
         if (arguments.callee.image && arguments.callee.blurb) {
             owner.flyout_show(li, options, arguments.callee.image, arguments.callee.blurb);
             arguments.callee.image = null;
             arguments.callee.blurb = null;
         }
-    };
-    cb.image = null;
-    cb.blurb = null;
-    
+    };    
     // load article
     if (li.fb_data.article)
         this.blurb_load(typeof li.fb_data.article == "object" ?  li.fb_data.article.id : li.fb_data.article, options, cb);
@@ -347,10 +335,14 @@ p.flyout_resources = function(li, options) {//fb.log("flyout_resources", li);
         this.image_load(typeof li.fb_data.image == "object"? li.fb_data.image.id : li.fb_data.image, options, cb);
     else
         cb.apply(null, ["image", "#"]);
+
+    return cb;
 };
 
 
 p.flyout_hide = function() {//fb.log("flyout_hide");
+    if (this.flyout_callback)
+        this.flyout_callback("disable", true);
     $("#fbs_flyout").hide();
 };
 
