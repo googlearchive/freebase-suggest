@@ -301,7 +301,6 @@ p.transform = function(data, txt) {
 };
 
 p.flyout = function(li, options) { //fb.log("flyout", li);
-    this.flyout_hide();
     this.flyout_callback = this.flyout_resources(li, options);     
 };
 
@@ -309,40 +308,55 @@ p.flyout = function(li, options) { //fb.log("flyout", li);
  * load flyout resources (thumbnail, blurb), don't show until
  * both thumbnail and blurb have been loaded.
  */
-p.flyout_resources = function(li, options) {//fb.log("flyout_resources", li);
-    if (!(li && li.fb_data && "id" in li.fb_data && "article" in li.fb_data && "image" in li.fb_data))
-        return;
+p.flyout_resources = function(li, options) {//fb.log("flyout_resources", li);    
+    var data = li.fb_data;
+    var data_types = ["article", "image"];
+    var cb = new FlyoutResourcesHandler(this, li, options);
     var owner = this;
-    var cb = function(data_type, data) {//fb.log("callback", data_type, data);    
-        // data_type: "image", "blurb", "disable"
-        arguments.callee[data_type] = data;        
-        if (arguments.callee.disable)
-            return;
-        if (arguments.callee.image && arguments.callee.blurb) {
-            owner.flyout_show(li, options, arguments.callee.image, arguments.callee.blurb);
-            arguments.callee.image = null;
-            arguments.callee.blurb = null;
-        }
-    };    
-    // load article
-    if (li.fb_data.article)
-        this.blurb_load(typeof li.fb_data.article == "object" ?  li.fb_data.article.id : li.fb_data.article, options, cb);
-    else
-        cb.apply(null, ["blurb", "&nbsp;"]);
-    
-    // load image
-    if (li.fb_data.image)        
-        this.image_load(typeof li.fb_data.image == "object"? li.fb_data.image.id : li.fb_data.image, options, cb);
-    else
-        cb.apply(null, ["image", "#"]);
-
+    $.each(data_types, function(i, n) {
+        var id = data[n];
+        if (id && typeof id == 'object')
+            id = id.id;
+        owner.flyout_resource_load(n, id, options, cb);        
+    });
     return cb;
 };
 
+p.flyout_resource_load = function(data_type, data_id, options, cb) {    
+    if (data_type == "article") {        
+        if (data_id)
+            this.blurb_load(data_id, options, cb);
+        else
+            cb.receive("blurb", "&nbsp;");
+    }
+    else if (data_type == "image") {
+        if (data_id)
+            this.image_load(data_id, options, cb);
+        else
+            cb.receive("image", "#");
+    }
+};
+
+function FlyoutResourcesHandler(owner, li, options) {
+    this.owner = owner;  
+    this.li = li;
+    this.options = options;
+};
+FlyoutResourcesHandler.prototype = {
+    receive: function(data_type, data) {    
+        if (!this.owner) return;
+        this[data_type] = {data: data};
+        if (this.image && this.blurb)
+            this.owner.flyout_show(this.li, this.options, this.image.data, this.blurb.data);
+    },
+    destroy: function() {
+        this.owner = this.li = this.options = this.image = this.blurb = null;
+    }
+};
 
 p.flyout_hide = function() {//fb.log("flyout_hide");
     if (this.flyout_callback)
-        this.flyout_callback("disable", true);
+        this.flyout_callback.destroy();
     $("#fbs_flyout").hide();
 };
 
@@ -410,17 +424,17 @@ p.blurb_receive = function(id, cb, o) {
     }
 
     // update cache
-    this.cache[id] = o;
+    //this.cache[id] = o;
     // handle result    
-    cb.apply(null, ["blurb", o]);
+    cb.receive("blurb", o);
 };
 
 p.blurb_load = function(id, options, cb) {
     // look in cache
-    if (id in this.cache) {
-        cb.apply(null, ["blurb", this.cache[id]]);
-        return;
-    }
+//    if (id in this.cache) {
+//        cb.receive("blurb", this.cache[id]);
+//        return;
+//    }
     $.ajax({
         type: "GET",
 		url: options.service_url + this.blurb_path(id, options),
@@ -433,16 +447,16 @@ p.blurb_load = function(id, options, cb) {
 
 p.image_load = function(id, options, cb) {//fb.log("image_load", id, options, cb);
     // look in cache
-    if (id in this.cache) {
-        cb.apply(null, ["image", this.cache[id]]);
-        return;
-    }    
+//    if (id in this.cache) {
+//        cb.receive("image", this.cache[id]);
+//        return;
+//    }    
     var i = new Image();
     var src = this.thumbnail_url(id, options);    
-    i.onload = fb.delegate(cb, null, ["image", src]);        
-    i.onerror = fb.delegate(cb, null, ["image", src]);  
+    i.onload = fb.delegate(cb.receive, cb, ["image", src]);        
+    i.onerror = fb.delegate(cb.receive, cb, ["image", src]);  
     fb.autoclean(i, fb.clean_image);
-    this.cache[id] = src;   
+//    this.cache[id] = src;   
     i.src = src; 
 };
 
