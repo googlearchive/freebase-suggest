@@ -123,7 +123,7 @@ p.transform = function(data, txt) {
 p.filter = function(data, txt) {
     if (txt == "")
         return true;
-    return data.name.toLowerCase().indexOf(txt.toLowerCase()) == 0;
+    return data.name && data.name.toLowerCase().indexOf(txt.toLowerCase()) == 0;
 };
 
 p.filter_hook = function(filtered, result) {
