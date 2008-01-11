@@ -579,8 +579,7 @@ p.list_hide = function() {//fb.log("list_hide");
 p.list_hide_hook = function() {};
 
 p.create_list_item = function(data, txt, options) {
-    var li = document.createElement("li");
-    $(li).addClass("fbs-li");
+    var li = $("<li class='fbs-li'></li>")[0];
     
     var trans = this.transform;
     if (typeof options.transform == "function")
