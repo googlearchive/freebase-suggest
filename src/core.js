@@ -331,7 +331,8 @@ fb.InputControl.prototype = {
         	case 38: // up
         	case 40: // down
         	   // prevents cursor/caret from moving
-        	   e.preventDefault();
+        	   if (!e.shiftKey)
+            	   e.preventDefault();
         	   break;
         	case 13: // return
                 this.enterkey(e);
