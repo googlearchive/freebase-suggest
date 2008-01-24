@@ -31,6 +31,9 @@ Favourite alum: <input type="text" id="example2"/>
 <h3>Films</h3>
 Last film I saw: <input type="text" id="example3" /> 
 
+<h3>Film critic who is also an actor - mutiple type constraint</h3>
+Film critic + actor: <input type="text" id="actor_cr" /> 
+
 <h3>People - with callback</h3>
 Enter a person: <input type="text" id="example4" />
 
@@ -42,6 +45,7 @@ jQuery(document).ready( function($) {
 	'#example1' : {},
 	'#example2' : { type:'/music/album' },
 	'#example3' : { type:'/film/film' },
+	'#actor_cr' : { type:'/film/actor,/film/film_critic' },
 	'#example4' : { type:'/people/person' }
     };
     
