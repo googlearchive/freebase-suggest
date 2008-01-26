@@ -271,7 +271,7 @@ fb.InputControl.prototype = {
            $(input).bind(n, owner.delegate(n));
         });
         this.transition("start");
-        this.handle({id:"TEXTCHANGE", input:input});        
+        //this.handle({id:"TEXTCHANGE", input:input});        
         this.manage_hook(input);    
     },
     
