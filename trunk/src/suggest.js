@@ -85,6 +85,7 @@
  *          type: '/film/film',
  *          category: 'instance',
  *          get_all_types: '0',
+ *          disamb: '1', 
  *          limit: '10'
  *      }
  * };
