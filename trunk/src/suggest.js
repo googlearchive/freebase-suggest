@@ -34,7 +34,7 @@
  * 
  * ac_qstr:     This is the parameter name to be passed to the autocomplete
  *              service for the string to autocomplete on. The value will
- *              be what the user typed in the input. Default is "query".
+ *              be what the user typed in the input. Default is "prefix".
  * 
  * blurb_path:  The path to the blurb service for the description to be shown
  *              in the flyout. Default is "/api/trans/blurb".
@@ -84,7 +84,6 @@
  *      ac_param: {
  *          type: '/film/film',
  *          category: 'instance',
- *          get_all_types: '0',
  *          disamb: '1', 
  *          limit: '10'
  *      }
@@ -125,7 +124,7 @@ function SuggestControl() {
             start: 0,
             limit: 20
         },
-        ac_qstr: "query",  // this will be added to the ac_param ...&prefix=str
+        ac_qstr: "prefix",  // this will be added to the ac_param ...&prefix=str
         blurb_path: "/api/trans/blurb",
         blurb_param: {
             maxlength: 300
@@ -170,7 +169,8 @@ p.list_load = function(input) {//fb.log("list_load", input);
     var txt = this.val(input);
     var param = options.ac_param;
     //TODO: remove star and change ac_qstr when search gets the same params as autocomplete
-    param[options.ac_qstr] = txt + '*'; // the search api needs a '*' to perform auto-complete rather than search.
+    param[options.ac_qstr] = txt; // + '*'; // the search api needs a '*' to perform auto-complete rather than search.
+                                  // dae: no longer needed if you use the "prefix" parameter
     $.ajax({
         type: "GET",
 		url: options.service_url + options.ac_path,
