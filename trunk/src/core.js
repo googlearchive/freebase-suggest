@@ -267,7 +267,7 @@ fb.InputControl.prototype = {
     manage: function(input) {
         this.release(input);
         var owner = this;
-        $.each(["blur", "keydown", "keypress", "keyup"], function(i,n) {
+        $.each(["blur", "keydown", "keypress", "keyup", "input", "paste"], function(i,n) {
            $(input).bind(n, owner.delegate(n));
         });
         this.transition("start");
@@ -280,7 +280,7 @@ fb.InputControl.prototype = {
     
     release: function(input) {//fb.log("release", input); 
         var owner = this;    
-        $.each(["blur", "keydown", "keypress", "keyup"], function(i,n) {
+        $.each(["blur", "keydown", "keypress", "keyup", "input", "paste"], function(i,n) {
            $(input).unbind(n, owner.delegate(n)); 
         });
         this.transition("start");
@@ -369,6 +369,16 @@ fb.InputControl.prototype = {
         	   this.textchange(e);
         	   break;
         } 
+    },
+
+    // Mozilla only, to detech paste
+    input: function(e) {//fb.log("on_input", e);
+        this.textchange(e);
+    },
+    
+    // IE only, to detect paste
+    paste: function(e) {//fb.log("on_paste", e);
+        this.textchange(e);
     },
 
     uparrow: function(e) {
