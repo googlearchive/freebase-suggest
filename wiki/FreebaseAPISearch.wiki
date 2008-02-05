@@ -5,9 +5,9 @@
 ||HTTP Post||False||
 ||Special Headers||None||
 ||Login Required||False||
-||Required Arguments||None||
-||Optional Arguments||query: the string to do a search for||
-|| ||prefix: a prefix to do an auto-complete on (may be incomplete)||
+||Required Arguments||prefix or query||
+||Optional Arguments||prefix: a prefix to do an auto-complete on (may be incomplete) - default||
+|| ||query: the string to do a search for||
 || ||type: type of items to match for||
 || ||limit: the maximum number of results to return, default is 20||
 || ||start: offset from which to start returning results, default is 0||
