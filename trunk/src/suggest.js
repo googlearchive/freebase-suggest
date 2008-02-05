@@ -26,15 +26,12 @@
  * ac_path:     The path to the autcomplete service. Default is "/api/service/search".
  * 
  * ac_param:    A dicionary of query parameters to the autocomplete service. 
- *              Currently, the supported parameters are 
- *              query (required) - the string to do an auto-complete on. See ac_qstr
- *              type  (optional) - type of items to match for (ie, "/film/film")
- *              limit (optional) - the maximum number of results to return, default is 20
- *              start (optional) - offset from which to start returning results, default is 0
+ *              see [http://code.google.com/p/freebase-suggest/wiki/FreebaseAPISearch]
  * 
  * ac_qstr:     This is the parameter name to be passed to the autocomplete
- *              service for the string to autocomplete on. The value will
- *              be what the user typed in the input. Default is "prefix".
+ *              service for the string to autocomplete on. Default is 'prefix'. 
+ *              The paramter value will be what the user typed in the input.
+ *              see [http://code.google.com/p/freebase-suggest/wiki/FreebaseAPISearch]
  * 
  * blurb_path:  The path to the blurb service for the description to be shown
  *              in the flyout. Default is "/api/trans/blurb".
@@ -74,7 +71,7 @@
  *      .bind('fb-select', function(e, data) { console.log('suggest: ', data.id); })
  * 
  * @desc Attach Freebase suggestion behavior to #myInput with default options and on
- *          'suggest', output the selected id the console.
+ *          'fb-select', output the selected id the console.
  *
  *
  * @example
