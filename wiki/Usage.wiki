@@ -1,4 +1,4 @@
-Requires at least [http://code.google.com/p/jqueryjs/ jquery-1.2].
+Requires at least [http://code.google.com/p/jqueryjs/ jquery-1.2.2].
 
 freebaseSuggest() provides a way to attach Freebase suggestion behavior to a
 text input using the Freebase.com autocomplete service.
@@ -11,8 +11,8 @@ freebaseSuggest accepts an optional argument which is a dictionary that could ov
 ||flyout||To enable flyout to show additional information for the currently highlighted item including a thumbnail and blurb. Default is true.||
 ||service_url||This the base url to all the api services like autocomplete, blurbs and thumbnails. Default is "http://www.freebase.com".||
 ||ac_path||The path to the autcomplete service. Default is "/api/service/search".||
-||ac_param||A dicionary of query parameters to the autocomplete service. Currently, the supported parameters are "query" (required) - the string to do an auto-complete on. See ac_qstr, "type"  (optional) - type of items to match for (ie, "/film/film"), "limit" (optional) - the maximum number of results to return, default is 20, "start" (optional) - offset from which to start returning results, default is 0||
-||ac_qstr||This is the parameter name to be passed to the autocomplete service for the string to autocomplete on. The value will be what the user typed in the input. Default is "query".||
+||ac_param||A dictionary of query parameters to the autocomplete service. see [http://code.google.com/p/freebase-suggest/wiki/FreebaseAPISearch]||
+||ac_qstr||This is the parameter name to be passed to the autocomplete service for the string to autocomplete on. Default is 'prefix'. The parameter value will be what the user typed in the input. see [http://code.google.com/p/freebase-suggest/wiki/FreebaseAPISearch]||
 ||blurb_path||The path to the blurb service for the description to be shown in the flyout. Default is "/api/trans/blurb".||
 ||blurb_param||The query parameters to the blurb service. Default is { maxlength: 300 }.||
 ||thumbnail_path||The path to the thumbnail service to be shown in the flyout. Default is "/api/trans/image_thumb".||
@@ -24,16 +24,16 @@ freebaseSuggest accepts an optional argument which is a dictionary that could ov
 In addition, freebaseSuggest will trigger the following events on behalf of
 the input it's attached to. They include:
 
-||suggest||Triggered when something is selected from the suggestion list. The data object will contain id and name fields: { id: aString, name: aString }.||
-||suggest-new||Triggered when the suggest_new option is selected. The data object will only contain a name field: { name: aString }.||
-||suggest-submit||Triggered when user presses enter key after selecting from list or when nothing is highlighted from the list (soft). The data object will contain a name and an id field (if something was selected from the list previously).||
+
+||fb-select||Triggered when something is selected from the suggestion list. The data object will contain id and name fields: { id: aString, name: aString }.||
+||fb-select-new||Triggered when the suggest_new option is selected. The data object will only contain a name field: { name: aString }.||
 
 
-Example 1. Attach Freebase suggestion behavior to #myInput with default options and on 'suggest', output the selected id to the console.
+Example 1. Attach Freebase suggestion behavior to #myInput with default options and on 'fb-select', output the selected id to the console.
 {{{
 $('#myInput')
      .freebaseSuggest()
-     .bind('suggest', function(e, data) { console.log('suggest: ', data.id); })
+     .bind('fb-select', function(e, data) { console.log('suggest: ', data.id); })
 }}}
 
 Example 2. Soft suggestion on instances of '/film/film' with a suggest new option and output the various events to the console.
@@ -47,8 +47,8 @@ var options = {
 };
 $('#myInput')
      .freebaseSuggest(options)
-     .bind('suggest', function(e, data) { console.log('suggest: ', data.id); })
-     .bind('suggest-new', function(e, data) { console.log('suggest new: ', data.name); });
+     .bind('fb-select', function(e, data) { console.log('suggest: ', data.id); })
+     .bind('fb-select-new', function(e, data) { console.log('suggest new: ', data.name); });
 }}}
  
  
