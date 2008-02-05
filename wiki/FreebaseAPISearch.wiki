@@ -5,7 +5,7 @@
 ||HTTP Post||False||
 ||Special Headers||None||
 ||Login Required||False||
-||Required Arguments||prefix or query||
+||Required Arguments||None||
 ||Optional Arguments||prefix: a prefix to do an auto-complete on (may be incomplete) - default||
 || ||query: the string to do a search for||
 || ||type: type of items to match for||
