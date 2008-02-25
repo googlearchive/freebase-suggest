@@ -127,6 +127,14 @@ fb.finalize = function(obj) {
         obj._autoclean_finalizer(obj);
 }
 
+fb.quote_id = function(id) {
+    if (id.charAt(0) == '/')
+        return id;
+    else
+        return ('/' + encodeURIComponent(id));
+};
+
+
 /**
  * call autoclean on window.unload
  */
@@ -543,6 +551,7 @@ p.list_show = function(input, result) {//fb.log("list_show", input, result);
     $("li", list)
         .each(function(i,n) {
             $(n).unbind();
+            fb.clean_expando(n);
         });
     $(list).empty();
         
