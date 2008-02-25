@@ -306,6 +306,12 @@ p.flyout = function(li, options) { //fb.log("flyout", li);
  * both thumbnail and blurb have been loaded.
  */
 p.flyout_resources = function(li, options) {//fb.log("flyout_resources", li);    
+    window.clearTimeout(this.flyout_resources_timeout);
+    //this.handle_timeout = window.setTimeout(this.delegate("handle", [{id:"LIST_RESULT", input:input, result:this.cache[input.fb_id][txt]}]), 0);    
+    this.flyout_resources_timeout = window.setTimeout(this.delegate("flyout_resources_delay", [li, options]), 100);
+}
+
+p.flyout_resources_delay = function(li, options) {
     var data = li.fb_data;
     var data_types = ["article", "image"];
     var cb = new FlyoutResourcesHandler(this, li, options);
