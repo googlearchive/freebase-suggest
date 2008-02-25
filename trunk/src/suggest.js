@@ -309,46 +309,7 @@ p.flyout_resources = function(li, options) {//fb.log("flyout_resources", li);
     var data = li.fb_data;
     var data_types = ["article", "image"];
     var cb = new FlyoutResourcesHandler(this, li, options);
-    var owner = this;
-    $.each(data_types, function(i, n) {
-        var id = data[n];
-        if (id && typeof id == 'object')
-            id = id.id;
-        owner.flyout_resource_load(n, id, options, cb);        
-    });
     return cb;
-};
-
-p.flyout_resource_load = function(data_type, data_id, options, cb) {    
-    if (data_type == "article") {        
-        if (data_id)
-            this.blurb_load(data_id, options, cb);
-        else
-            cb.receive("blurb", "&nbsp;");
-    }
-    else if (data_type == "image") {
-        if (data_id)
-            this.image_load(data_id, options, cb);
-        else
-            cb.receive("image", "#");
-    }
-};
-
-function FlyoutResourcesHandler(owner, li, options) {
-    this.owner = owner;  
-    this.li = li;
-    this.options = options;
-};
-FlyoutResourcesHandler.prototype = {
-    receive: function(data_type, data) {    
-        if (!this.owner) return;
-        this[data_type] = {data: data};
-        if (this.image && this.blurb)
-            this.owner.flyout_show(this.li, this.options, this.image.data, this.blurb.data);
-    },
-    destroy: function() {
-        this.owner = this.li = this.options = this.image = this.blurb = null;
-    }
 };
 
 p.flyout_hide = function() {//fb.log("flyout_hide");
@@ -403,84 +364,98 @@ p.flyout_show = function(li, options, img_src, blurb) {//fb.log("flyout_show", l
     $("#fbs_flyout")
         .css({top:pos.top, left:left, width:options.width})
         .show();
-    
-};
-
-p.blurb_receive = function(id, cb, o) {
-    // depending on if this is a jsonp or null/raw dataType, o may be an
-    // object or a string
-	if (typeof o == "object") {
-        // handle errors
-        if (o.status !== '200 OK') {
-            fb.error("SuggestControl.blurb_receive", o.code, o.messages, o);
-            return;
-        }
-
-        // now get the string value
-        o = o.result.body;
-    }
-
-    // update cache
-    //this.cache[id] = o;
-    // handle result    
-    cb.receive("blurb", o);
-};
-
-p.blurb_load = function(id, options, cb) {
-    // look in cache
-//    if (id in this.cache) {
-//        cb.receive("blurb", this.cache[id]);
-//        return;
-//    }
-    $.ajax({
-        type: "GET",
-		url: options.service_url + this.blurb_path(id, options),
-		data: options.blurb_param,
-		success: this.delegate("blurb_receive", [id,cb]),
-		dataType: use_jsonp(options) ? "jsonp" : null,
-		cache: true
-	});
-};
-
-p.image_load = function(id, options, cb) {//fb.log("image_load", id, options, cb);
-    // look in cache
-//    if (id in this.cache) {
-//        cb.receive("image", this.cache[id]);
-//        return;
-//    }    
-    var i = new Image();
-    var src = this.thumbnail_url(id, options);    
-    i.onload = fb.delegate(cb.receive, cb, ["image", src]);        
-    i.onerror = fb.delegate(cb.receive, cb, ["image", src]);  
-    fb.autoclean(i, fb.clean_image);
-//    this.cache[id] = src;   
-    i.src = src; 
-};
-
-
-p.blurb_path = function(id, options) {
-    return options.blurb_path + this.quote_id(id);    
-};
-
-p.thumbnail_url = function(id, options) {
-    var url = options.service_url + options.thumbnail_path +
-        this.quote_id(id);
-    var qs = $.param(options.thumbnail_param);
-    if (qs)
-         url += "?" + qs;
-    return url;
 };
 
 p.freebase_url = function(id, options) {
-    var url = options.service_url + "/view" + this.quote_id(id);
+    var url = options.service_url + "/view" + fb.quote_id(id);
     return url;
 };
 
-p.quote_id = function(id) {
-    if (id.charAt(0) == '/')
-        return id;
-    else
-        return ('/' + encodeURIComponent(id));
+/**
+ * We don't want to show the flyout until both the article (blurb)
+ * and the image have been loaded. This object is an attempt to
+ * encapsulate the loading of these two flyout resources, waits for both
+ * resources to load and then finally calls SuggestControl.flyout_show.
+ * 
+ * @param owner - SuggestControl
+ * @param li - the selected list item that we are showing the flyout for
+ * @param options - SuggestControl settings
+ */
+function FlyoutResourcesHandler(owner, li, options) {
+    this.owner = owner;  
+    this.li = li;
+    this.options = options;
+    var me = this;
+    $.each(["article", "image"], function(i,n) {
+        var id = li.fb_data[n];
+        if (id && typeof id == 'object')
+            id = id.id;
+        me["load_" + n](id);
+    });
+    
+};
+FlyoutResourcesHandler.prototype = {
+    load_article: function(id) {
+        if (id) {
+            $.ajax({
+                type: "GET",
+        		url: this.blurb_url(id),
+        		data: this.options.blurb_param,
+        		success: fb.delegate(this.receive_article, this),
+        		dataType: use_jsonp(this.options) ? "jsonp" : null,
+        		cache: true
+        	});            
+        }
+        else {
+            this.receive("article", "&nbsp;");
+        }
+    },
+    receive_article: function(o) {
+    	if (typeof o == "object") {
+            // handle errors
+            if (o.status !== '200 OK') {
+                fb.error("SuggestControl.blurb_receive", o.code, o.messages, o);
+                return;
+            }
+    
+            // now get the string value
+            o = o.result.body;
+        }
+        this.receive("article", o);
+    },
+    load_image: function(id) {
+        if (id) {
+            var i = new Image();
+            var src = this.thumbnail_url(id);
+            i.onload = fb.delegate(this.receive, this, ["image", src]);
+            i.onerror = fb.delegate(this.receive, this, ["image", "#"]);
+            i.src = src;
+            fb.autoclean(i, fb.clean_image);
+        }
+        else {
+            this.receive("image", "#");   
+        }
+    },
+    blurb_url: function(id) {
+        return this.options.service_url + this.options.blurb_path + fb.quote_id(id);
+    },
+    thumbnail_url: function(id) {
+        var url = this.options.service_url + this.options.thumbnail_path +
+            fb.quote_id(id);
+        var qs = $.param(this.options.thumbnail_param);
+        if (qs)
+             url += "?" + qs;
+        return url;
+    },
+    receive: function(data_type, data) {    
+        if (!this.owner) return;
+        this[data_type] = {data: data};
+        if (this.image && this.article)
+            this.owner.flyout_show(this.li, this.options, this.image.data, this.article.data);
+    },
+    destroy: function() {
+        this.owner = this.li = this.options = this.image = this.article = null;
+    }
 };
 
 fb.suggest = SuggestControl;
