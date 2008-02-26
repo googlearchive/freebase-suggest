@@ -96,12 +96,12 @@ p.list_load = function(input) {//fb.log("list_load", input);
     var param = {queries: q};
     $.ajax({
         type: "GET",
-		url: options.service_url + options.mqlread_path,
-		data: param,
-		success: this.delegate("list_receive", [input, txt]),
-		dataType: use_jsonp(options) ? "jsonp" : "json",
-		cache: true
-	});
+    url: options.service_url + options.mqlread_path,
+    data: param,
+    success: this.delegate("list_receive", [input, txt]),
+    dataType: use_jsonp(options) ? "jsonp" : "json",
+    cache: true
+  });
 };
 
 p.list_receive_hook = function(input, txt, result) {
@@ -136,7 +136,9 @@ p.delay = function(l) {
     return 0;
 };
 
+p.create_new = function(input){
+    //Can't create new topics with select control
+    return;
+};
+
 fb.select = SelectControl;
-
-
-
