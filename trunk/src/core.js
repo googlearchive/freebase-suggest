@@ -93,9 +93,13 @@ fb.clean_image = function(i) {
 /**
  * clean up fb expando variables on an object
  */
+fb.expandos = ["fb_data"]
 fb.clean_expando = function(obj) {
-    if (obj) 
-        delete obj.fb_data;        
+    if (obj) {
+        $.each(fb.expandos, function(i,n) {
+            obj[n] = null;
+        })
+    }
 };
 
 // ---------------------------------------------------- autoclean
