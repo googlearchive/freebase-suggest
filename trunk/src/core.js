@@ -222,7 +222,7 @@ fb.InputControl.prototype = {
         this.delegates[fname].argArray = argArray ? argArray : [];
         return this.delegates[fname];
     },
-
+    
     options: function(input) {//fb.log("this.options", input);
         var o = this.option_hash[input.fb_id];
         if (!o) 
@@ -249,19 +249,19 @@ fb.InputControl.prototype = {
             return "";
         return $.trim(v);
     },
-
+    
     /**
      * get "name" or "text" field of an object. if none return "unknown"
      */
     name: function(obj) {
-        // backwards compatibility with data.text and data.name  
+        // backwards compatibility with data.text and data.name
         if (obj.text != null)
             return obj.text;
         if (obj.name != null)
             return obj.name;
         return "unknown";
     },
-
+    
     /**
      * text change delay variable to length of string
      */
@@ -271,7 +271,7 @@ fb.InputControl.prototype = {
             t = 1/(6 * (l-0.7)) + .3;
         return t * 1000;
     },   
-
+    
     manage: function(input) {
         this.release(input);
         var owner = this;
@@ -279,8 +279,8 @@ fb.InputControl.prototype = {
            $(input).bind(n, owner.delegate(n));
         });
         this.transition("start");
-        //this.handle({id:"TEXTCHANGE", input:input});        
-        this.manage_hook(input);    
+        //this.handle({id:"TEXTCHANGE", input:input});
+        this.manage_hook(input);
     },
     
     // over-ride to handle manage
@@ -292,7 +292,7 @@ fb.InputControl.prototype = {
            $(input).unbind(n, owner.delegate(n)); 
         });
         this.transition("start");
-        this.release_hook(input); 
+        this.release_hook(input);
     },
     
     // over-ride to handle release
@@ -300,12 +300,12 @@ fb.InputControl.prototype = {
 
     focus: function(e) {//fb.log("on_focus", e);
         window.clearTimeout(this.manage_timeout);
-        var input = e.target;    
+        var input = e.target;
         try {
-            this.options(input);              
+            this.options(input);
         }
         catch(e) {
-            return;   
+            return;
         }
         this.manage_timeout = window.setTimeout(this.delegate("manage", [input]), this.manage_delay);     
     },
@@ -324,46 +324,46 @@ fb.InputControl.prototype = {
 
     keydown: function(e) {//fb.log("on_keydown", e.keyCode);
         switch(e.keyCode) {
-        	case 38: // up
-        	case 40: // down
-        	   // prevents cursor/caret from moving (in Safari)
-        	   e.preventDefault();
-        	   break;    
-        	default:
-        	   break;
+          case 38: // up
+          case 40: // down
+             // prevents cursor/caret from moving (in Safari)
+             e.preventDefault();
+             break;    
+          default:
+             break;
         }
     },
 
     keypress: function(e) {//fb.log("on_keypress", e.keyCode);
         switch(e.keyCode) {
-        	case 38: // up
-        	case 40: // down
-        	   // prevents cursor/caret from moving
-        	   if (!e.shiftKey)
-            	   e.preventDefault();
-        	   break;
-        	case 13: // return
+          case 38: // up
+          case 40: // down
+             // prevents cursor/caret from moving
+             if (!e.shiftKey)
+                 e.preventDefault();
+             break;
+          case 13: // return
                 this.enterkey(e);
-        		break ;
+            break ;
             case 27: // escape
                 this.escapekey(e);
-                break;    	   	   
-        	default:
-        	   break;
+                break;
+          default:
+             break;
         } 
     },
 
     keyup: function(e) {//fb.log("on_keyup", e.keyCode);
         switch(e.keyCode) {
-        	case 38: // up
-        		e.preventDefault();
-        		this.uparrow(e);
-        		break;
-        	case 40: // down
-        		e.preventDefault();
-        		this.downarrow(e);
-        		break;
-            case  9: // tab    		
+          case 38: // up
+            e.preventDefault();
+            this.uparrow(e);
+            break;
+          case 40: // down
+            e.preventDefault();
+            this.downarrow(e);
+            break;
+            case  9: // tab       
             case 13: // enter
             case 16: // ctrl
             case 17: // shift
@@ -373,12 +373,12 @@ fb.InputControl.prototype = {
             case 39: // right
             case 224:// apple/command
                 break;
-        	default:
-        	   this.textchange(e);
-        	   break;
+          default:
+             this.textchange(e);
+             break;
         } 
     },
-
+    
     // Mozilla only, to detech paste
     input: function(e) {//fb.log("on_input", e);
         this.textchange(e);
@@ -388,33 +388,38 @@ fb.InputControl.prototype = {
     paste: function(e) {//fb.log("on_paste", e);
         this.textchange(e);
     },
-
+    
     uparrow: function(e) {
         this.handle({id:"UPARROW", input:e.target});    
     },
-
+    
     downarrow: function(e) {
         this.handle({id:"DOWNARROW", input:e.target});
     },
-
+    
     enterkey: function(e) {
-        this.handle({id:"ENTERKEY", input:e.target, domEvent:e});
+        if(e.shiftKey) {
+            this.handle({id:"ENTERKEY-SHIFT", input:e.target, domEvent:e});
+        } else {
+            this.handle({id:"ENTERKEY", input:e.target, domEvent:e});
+        }
     },
-
+    
     escapekey: function(e) {
         this.handle({id:"ESCAPEKEY", input:e.target});
     },
-
-    textchange: function(e) {//fb.log("on_textchange", e.target); 
+    
+    textchange: function(e) {//fb.log("on_textchange", e.target);
         window.clearTimeout(this.textchange_timeout);
-        var txt = this.val(e.target);
-        var delay = this.delay(txt.length);
+        // Save inputted text
+        this.input_text = this.val(e.target);
+        var delay = this.delay(this.input_text.length);
         this.textchange_timeout = window.setTimeout(this.delegate("textchange_delay", [e.target]), delay);
     },
     
-    textchange_delay: function(input){//fb.log("on_textchange_delay", input);    
+    textchange_delay: function(input){//fb.log("on_textchange_delay", input);
         this.handle({id:"TEXTCHANGE", input:input});
-    }   
+    }
 };
 
 /**
@@ -486,7 +491,7 @@ p.list_receive = function(input, txt, o) {//fb.log("list_receive", input, query,
         fb.error("list_receive", o.code, o.messages, o);
         return;
     }
-
+    
     // currently, list_receive recognizes results of the forms:
     // 1. { list: { listItems: [...] } }
     // 2. { results: [...] }
@@ -505,7 +510,7 @@ p.list_receive = function(input, txt, o) {//fb.log("list_receive", input, query,
         fb.error("list_receive", o.code, "Unrecognized list result", o);
         return;
     }
-
+    
     // hook to update cache
     this.list_receive_hook(input, txt, result);
     
@@ -534,18 +539,18 @@ p.list_show = function(input, result) {//fb.log("list_show", input, result);
                         '<ul class="fbs-ul"></ul>' +
                     '</div>' +
                 '</div>');
-
+        
         list = $("> .fbs-ul")[0];
     }
     if (!list) 
         list = $("#fbs_list > .fbs-bottomshadow > .fbs-ul")[0];
-
+    
     $("#fbs_list > .fbs-bottomshadow")
         .unbind()
         .mousedown(this.delegate("mousedown_list"))
         .mouseup(this.delegate("mouseup_list"))
         .scroll(this.delegate("mousedown_list"));
-
+    
     
     // unbind all li events and empty list
     $("li", list)
@@ -554,14 +559,13 @@ p.list_show = function(input, result) {//fb.log("list_show", input, result);
             fb.clean_expando(n);
         });
     $(list).empty();
-        
+    
     var filter = this.filter;
     if (typeof options.filter == "function")
         filter = options.filter;
     
     if (!result.length)
         $(list).append(this.create_list_item({id:"NO_MATCHES", text:"no matches"}, null, options).addClass("fbs-li-nomatch"));
-
     
     var filtered = [];
     $.each(result, function(i, n) {
@@ -577,7 +581,7 @@ p.list_show = function(input, result) {//fb.log("list_show", input, result);
     // hook to add additional html elemments and handlers
     // like "Create New" item under the list
     this.list_show_hook(list, input, options);
-
+    
     var pos = $(input).offset({border: true, padding: true});
     var top = pos.top + input.clientHeight + this.fudge;
     $("#fbs_list")
@@ -588,7 +592,7 @@ p.list_show = function(input, result) {//fb.log("list_show", input, result);
 p.list_show_hook = function(list, input, options) { };
 
 p.filter_hook = function(filtered, result) {
-    return filtered;  
+    return filtered;
 };
 
 p.list_hide = function() {//fb.log("list_hide");
@@ -604,11 +608,11 @@ p.create_list_item = function(data, txt, options) {
     var trans = this.transform;
     if (typeof options.transform == "function")
         trans = options.transform;
-
-    var html = trans.apply(this, [data, txt]); 
+    
+    var html = trans.apply(this, [data, txt]);
    
     $(li).append(html);
-
+    
     // sometimes data contains text and/or name
     if ("text" in data)
         data.name = data.text;
@@ -622,7 +626,7 @@ p.create_list_item = function(data, txt, options) {
             owner.list_select(null, this, options); 
         })
         .click(function(e) { 
-            owner.click_listitem(this); 
+            owner.click_listitem(this);
         });
 };
 
@@ -633,7 +637,7 @@ p.create_list_item = function(data, txt, options) {
  * @return TRUE to include in list or FALSE to exclude from list.
  */
 p.filter = function(data, txt) {
-    return true;  
+    return true;
 };
 
 /**
@@ -654,7 +658,7 @@ p.transform = function(data, txt) {
 p.loading_show = function(input) {
     this.list_hide();
     if (!$("#fbs_loading").length) {
-        $(document.body)        
+        $(document.body)
             .append(
                 '<div style="display:none;position:absolute" id="fbs_loading" class="fbs-topshadow">' +
                     '<div class="fbs-bottomshadow">'+
@@ -679,7 +683,7 @@ p.loading_show = function(input) {
  * hide loading message
  */
 p.loading_hide = function() {
-    $("#fbs_loading").hide();     
+    $("#fbs_loading").hide();
 };
 
 p.list_select = function(index, li, options) {
@@ -721,32 +725,47 @@ p.list_selection = function(returnObj) {
     return returnObj;
 }
 
-p.list_select_next = function(options) {
+p.list_select_next = function(options, data) {
     var len = this.list_length();
     var obj = this.list_selection();
     var index = obj.index+1;
-    if (index >=0 && index < len)
-        return this.list_select(index, null, options);
-    else if (options.soft)
+    if (index >=0 && index < len){
+        var sel = this.list_select(index, null, options);
+        // Change input value to reflect selected item
+        var txt = $(".fbs-li-name", sel).text();
+        $(data.input).val(txt);
+        return sel
+    } else if (options.soft) {
+        // Since no item is currently selected,
+        //   change input value to reflect previously inputted text
+        $(data.input).val(this.input_text);
         return this.list_select(null, null, options);
-    else if (len > 0)
+    } else if (len > 0) {
         return this.list_select(0, null, options);
+    }
     return null;
 };
 
-p.list_select_prev = function(options) {
+p.list_select_prev = function(options, data) {
     var len = this.list_length();
     var obj = this.list_selection();
     var index = obj.index-1;
-    if (index >=0 && index < len)
-        return this.list_select(index, null, options);
-    else if (options.soft) {
-        if (index < -1 && len > 0) 
+    if (index >=0 && index < len) {
+        var sel = this.list_select(index, null, options);
+        // Change input value to reflect selected item
+        var txt = $(".fbs-li-name", sel).text();
+        $(data.input).val(txt);
+        return sel
+    } else if (options.soft) {
+        if (index < -1 && len > 0) {
             return this.list_select(len - 1, null, options);
-        else 
+        } else {
+            // Since no item is currently selected,
+            //   change input value to reflect previously inputted text
+            $(data.input).val(this.input_text);
             return this.list_select(null, null, options);
-    }
-    else if (len > 0)
+        }
+    } else if (len > 0)
         return this.list_select(len - 1, null, options);
     return null;
 };
@@ -768,7 +787,7 @@ p.em_text = function(text, em_str) {
         text.substring(index, index+em_str.length) +
         '</em>' +
         text.substring(index + em_str.length);
-    }  
+    }
     return em;
 };
 
@@ -785,7 +804,7 @@ p.caret_last = function(input) {
     else if (input.setSelectionRange) {
         // mozilla
         input.setSelectionRange(l, l);
-    }    
+    }
 };
 
 /**
@@ -909,23 +928,29 @@ state_selecting.prototype.handle = function(data) {//fb.log("state_selecting.han
             break;
         case "DOWNARROW":
             $("#fbs_list").show();
-            var li = this.c.list_select_next(options);
+            var li = this.c.list_select_next(options, data);
             this.c.scroll_into_view(li);
             break;
         case "UPARROW":
-            $("#fbs_list").show();        
-            var li = this.c.list_select_prev(options);
+            $("#fbs_list").show();
+            var li = this.c.list_select_prev(options, data);
             this.c.scroll_into_view(li);
+            break;
+        case "ENTERKEY-SHIFT":
+            // Create new topic if user is holding shift while hitting enter
+            this.c.create_new(data.input);
+            data.domEvent.preventDefault();
             break;
         case "ENTERKEY":
             var s = this.c.list_selection();
             if (s.index == -1 || !s.item) {
-                this.sm.transition("start", null, null, data);
+                $(data.input).trigger("fb-noselect", [data]);
                 return;
             }
-            if ($("#fbs_list").css("display") != "none")
+            
+            if ($("#fbs_list").css("display") != "none"){
                 data.domEvent.preventDefault();
-            else {              
+            } else {
                 $(data.input).trigger("fb-submit", [s.item.fb_data]);
                 return;   
             }
@@ -947,12 +972,12 @@ state_selecting.prototype.handle = function(data) {//fb.log("state_selecting.han
                         .trigger("suggest", [data.item.fb_data]); // legacy - for compatibility
                     this.c.list_hide();
                     break;
-            }            
+            }
             break;
         case "ESCAPEKEY":
-            this.c.list_hide();        
+            this.c.list_hide();
             this.sm.transition("start");
-            break;            
+            break;
         default:
             break;
     };
@@ -970,6 +995,6 @@ function use_jsonp(options) {
     //console.log("Hostname = ", hostname);
     if (hostname == options.service_url)
         return false;
-
+    
     return true;
-}  
+}

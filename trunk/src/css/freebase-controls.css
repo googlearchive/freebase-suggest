@@ -1,6 +1,6 @@
 
 .fbs-topshadow {
-	font-family: Arial, Helvetica, sans-serif;		
+/*	font-family: Arial, Helvetica, sans-serif;	*/	
 	margin: -8px 0px 0px -4px;
 	padding:0;
 	display:block;
@@ -97,29 +97,46 @@
 } 
 
 .fbs-selectnew {
-	cursor: pointer;
+    color: #383838;
+    border: 1px solid #c5c5c5;
+    border-top: 1px solid #fff;    
+    background-color: #f3f3f3;
+	font-size: .9em;
 	margin: 0px;
-	padding: 3px 0px 3px 4px;
-	text-align: left;
-	font-style: italic;
-	color: #275789;	
-	border: 1px solid #808080;
-	background-color: #ffffff;
+	padding: .4em .3em .5em;
 	filter:alpha(opacity=90);
 	-moz-opacity:.90;
-	opacity:.90;  
+	opacity:.90;
 }
 
-.fbs-li-selected,
-.fbs-selectnew-selected {
+.fbs-selectnew-button {
+	cursor: pointer;
+    background: url(button_bkd.gif) bottom left repeat-x white;
+    border: 1px solid #9a9a9a;
+    padding: .2em .3em;
+    margin-left: 0px !important;
+    max-width: 17em;
+}
+
+
+.fbs-selectnew-button:hover {
+	text-decoration: none;
+}
+
+.fbs-selectnew-description {
+	margin-bottom: .6em;
+}
+
+.fbs-selectnew-shortcut {
+	font-size: .9em;
+	color: #535353;
+	margin-left: .4em;
+}
+
+.fbs-li-selected {
 	background-color:#97bedf;
 	color: #000000;
 }
-
-.fbs-selectnew-selected {
-	text-decoration: underline;	
-}
-
 
 .fbs-em {
 	font-style: normal;
@@ -128,6 +145,11 @@
 
 .fbs-flyout-container {
 	padding: 2px .45em 2px 14px;
+        min-height: 1em;
+}
+
+* html .fbs-flyout-container {
+        height: 1%;
 }
 
 .fbs-flyout-name,
@@ -174,4 +196,3 @@
 .fbs-flyout-name a:visited {
 	color:#800080;
 }
-

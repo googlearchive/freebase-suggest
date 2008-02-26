@@ -26,12 +26,15 @@
  * ac_path:     The path to the autcomplete service. Default is "/api/service/search".
  * 
  * ac_param:    A dicionary of query parameters to the autocomplete service. 
- *              see [http://code.google.com/p/freebase-suggest/wiki/FreebaseAPISearch]
+ *              Currently, the supported parameters are 
+ *              query (required) - the string to do an auto-complete on. See ac_qstr
+ *              type  (optional) - type of items to match for (ie, "/film/film")
+ *              limit (optional) - the maximum number of results to return, default is 20
+ *              start (optional) - offset from which to start returning results, default is 0
  * 
  * ac_qstr:     This is the parameter name to be passed to the autocomplete
- *              service for the string to autocomplete on. Default is 'prefix'. 
- *              The paramter value will be what the user typed in the input.
- *              see [http://code.google.com/p/freebase-suggest/wiki/FreebaseAPISearch]
+ *              service for the string to autocomplete on. The value will
+ *              be what the user typed in the input. Default is "prefix".
  * 
  * blurb_path:  The path to the blurb service for the description to be shown
  *              in the flyout. Default is "/api/trans/blurb".
@@ -71,7 +74,7 @@
  *      .bind('fb-select', function(e, data) { console.log('suggest: ', data.id); })
  * 
  * @desc Attach Freebase suggestion behavior to #myInput with default options and on
- *          'fb-select', output the selected id the console.
+ *          'suggest', output the selected id the console.
  *
  *
  * @example
@@ -111,7 +114,7 @@ function SuggestControl() {
     fb.InputSelectControl.call(this);
     this.default_options = {
         width: 275,   // width of list and flyout
-        soft: false,  // if true, DO NOT auto-select first item, otherwise select first item by default
+        soft: true,  // if true, DO NOT auto-select first item, otherwise select first item by default
         suggest_new: null, // to show suggest new option, set text to something (eg, "Create new topic")
         flyout: true,  // show flyout on the side of highlighted item
         service_url: "http://www.freebase.com",
@@ -161,7 +164,7 @@ p.list_load = function(input) {//fb.log("list_load", input);
         window.clearTimeout(this.handle_timeout);
         this.handle_timeout = window.setTimeout(this.delegate("handle", [{id:"LIST_RESULT", input:input, result:this.cache[input.fb_id][txt]}]), 0);
         return;
-    }    
+    }
     var options = this.options(input);
     var txt = this.val(input);
     var param = options.ac_param;
@@ -170,12 +173,12 @@ p.list_load = function(input) {//fb.log("list_load", input);
                                   // dae: no longer needed if you use the "prefix" parameter
     $.ajax({
         type: "GET",
-		url: options.service_url + options.ac_path,
-		data: param,
-		success: this.delegate("list_receive", [input, txt]),
-		dataType: use_jsonp(options) ? "jsonp": "json",
-		cache: true
-	});
+    url: options.service_url + options.ac_path,
+    data: param,
+    success: this.delegate("list_receive", [input, txt]),
+    dataType: use_jsonp(options) ? "jsonp": "json",
+    cache: true
+  });
 };
 
 p.list_receive_hook = function(input, txt, result) {
@@ -191,29 +194,32 @@ p.list_receive_hook = function(input, txt, result) {
  */
 p.list_show_hook = function(list, input, options) {    
     if (!$(list).next(".fbs-selectnew").length)
-        $(list).after('<div style="display:none;" class="fbs-selectnew"></div>');
-    var suggest_new = $(list).next(".fbs-selectnew")[0];
+        $(list).after('<div style="display: none;" class="fbs-selectnew"></div>');
+    var suggest_new = $(list).next(".fbs-selectnew");
     if (options.suggest_new) {
         var owner = this;
+        // Create description, button and shortcut text
         $(suggest_new)
             .unbind()
             .empty()
-            .append(options.suggest_new)
-            .show()
+            .append('<div class="fbs-selectnew-description">Your item not in the list?</div><button type="submit" class="fbs-selectnew-button"></button><span class="fbs-selectnew-shortcut">(Shift+Enter)</span>')
             .mouseover(function(e) {
-                $(e.target).addClass("fbs-selectnew-selected");
                 owner.list_select(null);
                 owner.flyout_hide();   
-            })
-            .mouseout(function(e) {
-                $(this).removeClass("fbs-selectnew-selected");
-            })
-            .click(function(e) {
-                $(input).trigger("fb-select-new", [{name:owner.val(input)}])
-                    .trigger("suggest-new", [{name:owner.val(input)}]); // legacy - for compatibility
-                owner.list_hide();
-                owner.transition("start");
             });
+        
+        // Create and title create new button
+        var suggest_new_button = suggest_new.find(".fbs-selectnew-button").eq(0);
+        $(suggest_new_button)
+            .unbind()
+            .empty()
+            .append(options.suggest_new)
+            .click(function(e) {
+                owner.create_new(input);
+            });
+        
+        // Display create new box
+        suggest_new.show();
     }
     else
         $(suggest_new).unbind().hide();
@@ -229,6 +235,13 @@ p.list_select_hook = function(sli, options) {
         this.flyout(sli, options);  
 };
 
+p.create_new = function(input){
+    $(input).trigger("fb-select-new", [{name:this.val(input)}])
+        .trigger("suggest-new", [{name:this.val(input)}]); // legacy - for compatibility
+    this.list_hide();
+    this.transition("start");
+}
+
 p.transform = function(data, txt) {
     var owner = this;
     var types = [];
@@ -238,21 +251,21 @@ p.transform = function(data, txt) {
                 types.push(owner.name(n));
         });
     types = types.join(", ");
-
+    
     var domains = [];
     if (data.domain)
         $.each(data.domain, function(i,n){
             domains.push(owner.name(n));
         });
     domains = domains.join(", ");
-
+    
     var aliases = [];
     if (data.alias)
         $.each(data.alias, function(i,n){
             aliases.push(n);
         });
     aliases = aliases.join(", ");
-
+    
     var props = [];
     if (data.properties)
         $.each(data.properties, function(i,n){
@@ -278,12 +291,12 @@ p.transform = function(data, txt) {
     var text = $(".fbs-li-name", div).append(document.createTextNode(this.name(data))).text();
     if (txt) 
         $(".fbs-li-name", div).empty().append(this.em_text(text, txt));
-
+    
     if (types.length)
         $(".fbs-li-types", div).append(document.createTextNode(types));
     else
         $(".fbs-li-types", div).remove();
-
+    
     if (domains.length)
         $(".fbs-li-domains", div).append(document.createTextNode(domains));
     else
@@ -330,7 +343,7 @@ p.flyout_show = function(li, options, img_src, blurb) {//fb.log("flyout_show", l
     var s = this.list_selection().item;
     if (!(li == s && li.fb_data.id == s.fb_data.id))
         return;
-
+    
     if (!$("#fbs_flyout").length) {
         $(document.body)
             .append(
@@ -359,7 +372,7 @@ p.flyout_show = function(li, options, img_src, blurb) {//fb.log("flyout_show", l
     $("#fbs_flyout .fbs-flyout-types").empty().append($(".fbs-li-types", li).text());
     $("#fbs_flyout .fbs-flyout-domains").empty().append($(".fbs-li-domains", li).text());
     $("#fbs_flyout .fbs-flyout-blurb").empty().append(blurb);
-
+    
     var pos = $("#fbs_list > .fbs-bottomshadow > .fbs-ul").offset();
     var left = pos.left + options.width;
     var sl = document.body.scrollLeft;
@@ -405,25 +418,25 @@ FlyoutResourcesHandler.prototype = {
         if (id) {
             $.ajax({
                 type: "GET",
-        		url: this.blurb_url(id),
-        		data: this.options.blurb_param,
-        		success: fb.delegate(this.receive_article, this),
-        		dataType: use_jsonp(this.options) ? "jsonp" : null,
-        		cache: true
-        	});            
+                url: this.blurb_url(id),
+                data: this.options.blurb_param,
+                success: fb.delegate(this.receive_article, this),
+                dataType: use_jsonp(this.options) ? "jsonp" : null,
+                cache: true
+            });
         }
         else {
             this.receive("article", "&nbsp;");
         }
     },
     receive_article: function(o) {
-    	if (typeof o == "object") {
+        if (typeof o == "object") {
             // handle errors
             if (o.status !== '200 OK') {
                 fb.error("SuggestControl.blurb_receive", o.code, o.messages, o);
                 return;
             }
-    
+            
             // now get the string value
             o = o.result.body;
         }
@@ -465,4 +478,3 @@ FlyoutResourcesHandler.prototype = {
 };
 
 fb.suggest = SuggestControl;
-
