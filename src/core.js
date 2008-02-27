@@ -949,6 +949,7 @@ state_selecting.prototype.handle = function(data) {//fb.log("state_selecting.han
             var s = this.c.list_selection();
             if (s.index == -1 || !s.item) {
                 $(data.input).trigger("fb-noselect", [data]);
+                data.domEvent.preventDefault();
                 return;
             }
             
