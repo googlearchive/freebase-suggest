@@ -781,7 +781,10 @@ state_start.prototype.handle = function(data) {//fb.log("state_start.handle", da
                 this.c.list_hide();
             break;
         case "ENTERKEY":
-            $(data.input).trigger("fb-submit", [{name:this.c.val(data.input)}]);
+            $(data.input).trigger("fb-noselect", [data]);
+            data.domEvent.preventDefault();
+        case "ENTERKEY-SHIFT":
+            data.domEvent.preventDefault();
             break;
         default:
             break;
@@ -824,7 +827,10 @@ state_getting.prototype.handle = function(data) {//fb.log("state_getting.handle"
             this.sm.transition("selecting", null, data);
             break;
         case "ENTERKEY":      
-            $(data.input).trigger("fb-submit", [{name:this.c.val(data.input)}]);            
+            $(data.input).trigger("fb-noselect", [data]);
+            data.domEvent.preventDefault();  
+        case "ENTERKEY-SHIFT":
+            data.domEvent.preventDefault();       
             break;
         case "ESCAPEKEY":
             this.c.list_hide();
