@@ -68,68 +68,8 @@ fb.delegate = function(fn, thisArg, argArray)  {
     dg.fn = fn;
     dg.argArray = argArray;
 
-    // clean up delegate on window.unload
-    fb.autoclean(dg, fb.clean_delegate);
-
     return (dg);
 };
-
-/**
- * clean up a delegate
- */
-fb.clean_delegate = function(f) {
-    if (f) 
-        f.thisArg = f.fn = f.argArray = null;      
-};
-
-/**
- * clean up an image object
- */
-fb.clean_image = function(i) {
-    if (i)
-        i.onload = i.onerror = null;
-};
-
-/**
- * clean up fb expando variables on an object
- */
-fb.expandos = ["fb_data"]
-fb.clean_expando = function(obj) {
-    if (obj) {
-        $.each(fb.expandos, function(i,n) {
-            obj[n] = null;
-        })
-    }
-};
-
-// ---------------------------------------------------- autoclean
-fb.AUTOCLEAN_HEAP = {};
-fb.AUTOCLEAN_SERIAL_NO = 0;
-
-fb.autoclean = function(obj, finalizer) {
-    obj._autoclean_serial_no = fb.AUTOCLEAN_SERIAL_NO++;
-    if (finalizer)
-        obj._autoclean_finalizer = finalizer;
-    fb.AUTOCLEAN_HEAP[obj._autoclean_serial_no] = obj;
-};
-
-fb.autoclean_gc = function() {
-    for (var k in fb.AUTOCLEAN_HEAP) {
-        var obj = fb.AUTOCLEAN_HEAP[k];
-        if ('_autoclean_finalizer' in obj)
-            obj._autoclean_finalizer(obj)
-    }
-    fb.AUTOCLEAN_HEAP = {};
-}
-
-fb.finalize = function(obj) {
-    if (!obj || !('_autoclean_serial_no' in obj))
-        return;
-    var serial_no = obj._autoclean_serial_no;
-    delete fb.AUTOCLEAN_HEAP[serial_no];
-    if ('_autoclean_finalizer' in obj)
-        obj._autoclean_finalizer(obj);
-}
 
 fb.quote_id = function(id) {
     if (id.charAt(0) == '/')
@@ -138,11 +78,6 @@ fb.quote_id = function(id) {
         return ('/' + encodeURIComponent(id));
 };
 
-
-/**
- * call autoclean on window.unload
- */
-$(window).unload(fb.autoclean_gc);
 
 /**
  * simple state object
@@ -558,9 +493,9 @@ p.list_show = function(input, result) {//fb.log("list_show", input, result);
     
     // unbind all li events and empty list
     $("li", list)
-        .each(function(i,n) {
-            $(n).unbind();
-            fb.clean_expando(n);
+        .each(function() {
+            $(this).unbind();
+            this.fb_data = null; // clean up expando variable "fb_data"
         });
     $(list).empty();
     
@@ -622,7 +557,6 @@ p.create_list_item = function(data, txt, options) {
         data.name = data.text;
     
     li.fb_data = data;
-    fb.autoclean(li, fb.clean_expando);
     
     var owner = this;
     return $(li)

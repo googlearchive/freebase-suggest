@@ -446,14 +446,18 @@ FlyoutResourcesHandler.prototype = {
         if (id) {
             var i = new Image();
             var src = this.thumbnail_url(id);
-            i.onload = fb.delegate(this.receive, this, ["image", src]);
-            i.onerror = fb.delegate(this.receive, this, ["image", "#"]);
+            i.onload = fb.delegate(this.receive_image, this, [src, i]);
+            i.onerror = fb.delegate(this.receive_image, this, ["#", i]);
             i.src = src;
-            fb.autoclean(i, fb.clean_image);
         }
         else {
             this.receive("image", "#");   
         }
+    },
+    receive_image: function(src, i) {
+        this.receive("image", src);
+        // clean up Image.onload and onerror handlers
+        i.onload = i.onerror = null;
     },
     blurb_url: function(id) {
         return this.options.service_url + this.options.blurb_path + fb.quote_id(id);
