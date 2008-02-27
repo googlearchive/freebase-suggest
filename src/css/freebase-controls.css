@@ -111,11 +111,14 @@
 
 .fbs-selectnew-button {
 	cursor: pointer;
-    background: url(button_bkd.gif) bottom left repeat-x white;
+   background: url(button_bkd.gif) bottom left repeat-x white;
     border: 1px solid #9a9a9a;
     padding: .2em .3em;
     margin-left: 0px !important;
     max-width: 17em;
+    overflow:visible;
+    width: auto;
+    font-size: 1em; /* make sure size of font cascades to button in ie*/
 }
 
 
