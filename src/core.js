@@ -782,7 +782,7 @@ state_start.prototype.handle = function(data) {//fb.log("state_start.handle", da
             break;
         case "ENTERKEY":
             $(data.input).trigger("fb-noselect", [data]);
-            data.domEvent.preventDefault();
+            break;
         case "ENTERKEY-SHIFT":
             data.domEvent.preventDefault();
             break;
@@ -828,7 +828,7 @@ state_getting.prototype.handle = function(data) {//fb.log("state_getting.handle"
             break;
         case "ENTERKEY":      
             $(data.input).trigger("fb-noselect", [data]);
-            data.domEvent.preventDefault();  
+            break;
         case "ENTERKEY-SHIFT":
             data.domEvent.preventDefault();       
             break;
@@ -889,7 +889,6 @@ state_selecting.prototype.handle = function(data) {//fb.log("state_selecting.han
             var s = this.c.list_selection();
             if (s.index == -1 || !s.item) {
                 $(data.input).trigger("fb-noselect", [data]);
-                data.domEvent.preventDefault();
                 return;
             }
             
