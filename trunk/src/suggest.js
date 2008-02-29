@@ -66,6 +66,8 @@
  * 
  * fb-select-new:   Triggered when the suggest_new option is selected. 
  *                  The data object will only contain a name field: { name: aString }.
+ *
+ * fb-noselect:   Triggered when the user performs a select action without highlighting an entry.
  * 
  *
  * @example
