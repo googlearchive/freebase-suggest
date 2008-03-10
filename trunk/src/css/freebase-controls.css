@@ -28,6 +28,7 @@
 	text-align: left;
 	list-style:none;
 	border: 1px solid #808080;
+  color: #000000;
   background-color: #ffffff;
   /* font-size: .9em;*/
   filter:alpha(opacity=95);
