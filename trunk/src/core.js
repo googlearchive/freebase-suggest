@@ -26,7 +26,9 @@ $.fn._freebaseInput = function(control, options) {
             // store options in hash
             var o = {};
             $.extend(o, control.default_options, options);
-            control.option_hash[this.fb_id] = o;            
+            control.option_hash[this.fb_id] = o;
+            
+            $(this).click(control.delegate("click"));
         });
 };
 
@@ -58,7 +60,7 @@ fb.delegate = function(fn, thisArg, argArray)  {
         // 'arguments' isn't technically an array, so we can't just use concat
         var f_args = [];
         for(var i=0, len=arguments.length; i<len; i++)
-          	f_args.push(arguments[i]);
+            f_args.push(arguments[i]);
         if (arguments.callee && arguments.callee.fn)
           return (arguments.callee.fn.apply(arguments.callee.thisArg, arguments.callee.argArray.concat(f_args)));
         return undefined;
@@ -103,16 +105,16 @@ fb.state_machine = function(states) {
         if (i==0) 
             owner.current_state = n[0];
     });
-    if (!this.current_state) 
+    if (!this.current_state)
         throw "StateMachine must be initialized with at least one state";
-    this.states[this.current_state].enter();     
+    this.states[this.current_state].enter();
 };
 fb.state_machine.prototype = {    
     transition: function(to_state, exit_data, enter_data, data) { //fb.log("state_machine.transition current_state: ", this.current_state, "to_state: ", to_state);
         // to_state: the target destination state
         // exit_data: the exit data for current state
         // enter_data: the enter data for to_state
-        // data: the data for to_state.handle        
+        // data: the data for to_state.handle
         var target = this.states[to_state];
         if (!target) 
             throw("Unrecongized state:" + to_state);
@@ -125,7 +127,7 @@ fb.state_machine.prototype = {
         // enter target state
         target.enter(enter_data);
 
-        this.current_state = to_state;        
+        this.current_state = to_state;
         
         // handle data
         this.handle(data);
@@ -147,6 +149,7 @@ fb.InputControl = function() {
     this.option_hash = {};
     this.sm = null;
     this.delegates = {};
+    this.dropdown_delay = 300;
     this.manage_delay = 200;
     this.release_delay = 100;
 };
@@ -316,6 +319,10 @@ fb.InputControl.prototype = {
              this.textchange(e);
              break;
         } 
+    },
+    
+    click: function(e) {
+        //Override this to handle mouseclicks
     },
     
     // Mozilla only, to detech paste
@@ -780,6 +787,9 @@ state_start.prototype.handle = function(data) {//fb.log("state_start.handle", da
             else 
                 this.c.list_hide();
             break;
+        case "DROPDOWN":
+            this.sm.transition("getting", null, data);
+            break;
         case "ENTERKEY":
             $(data.input).trigger("fb-noselect", [data]);
             break;
@@ -801,12 +811,12 @@ function state_getting(c) {
 state_getting.prototype = new select_state();
 state_getting.prototype.constructor = state_getting;
 
-state_getting.prototype.enter = function(data) {//fb.log("state_getting.enter", data); 
+state_getting.prototype.enter = function(data) {//fb.log("state_getting.enter", data);
     window.clearTimeout(this.loadmsg_timeout);
     if (!data || !data.input) 
         return;
     // show loading msg
-    this.loadmsg_timeout = window.setTimeout(this.c.delegate("loading_show", [data.input]), this.c.loadmsg_delay);    
+    this.loadmsg_timeout = window.setTimeout(this.c.delegate("loading_show", [data.input]), this.c.loadmsg_delay);
     // request autocomplete url
     this.c.list_load(data.input);
 };
@@ -879,6 +889,9 @@ state_selecting.prototype.handle = function(data) {//fb.log("state_selecting.han
             $("#fbs_list").show();
             var li = this.c.list_select_prev(options, data);
             this.c.scroll_into_view(li);
+            break;
+        case "DROPDOWN":
+            this.sm.transition("getting", null, data);
             break;
         case "ENTERKEY-SHIFT":
             // Create new topic if user is holding shift while hitting enter
