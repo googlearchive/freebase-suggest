@@ -1,4 +1,9 @@
 
+.fbs-enumcontrol {
+	background: #ffffff url(down-arrow.gif) no-repeat center right;
+	padding-right:12px;
+}
+
 .fbs-topshadow {
 /*	font-family: Arial, Helvetica, sans-serif;	*/	
 	margin: -8px 0px 0px -4px;
@@ -28,7 +33,6 @@
 	text-align: left;
 	list-style:none;
 	border: 1px solid #808080;
-  color: #000000;
   background-color: #ffffff;
   /* font-size: .9em;*/
   filter:alpha(opacity=95);
@@ -39,8 +43,9 @@
 }
 
 .fbs-ul {
-	max-height: 300px;    
+	max-height: 300px;
 }
+
 * html .fbs-ul  {
 	height: expression( this.scrollHeight > 300 ? "300" : "auto" ); /* sets max-height for IE */
 }
@@ -57,6 +62,7 @@
 .fbs-li-domains,
 .fbs-li-name,
 .fbs-li-props {
+	_width : 253px !important; /* TODO Move to conditional comments */
 	overflow: hidden;
 	white-space:nowrap;
 	text-overflow:ellipsis;
@@ -112,14 +118,11 @@
 
 .fbs-selectnew-button {
 	cursor: pointer;
-   background: url(button_bkd.gif) bottom left repeat-x white;
+    background: url(button_bkd.gif) bottom left repeat-x white;
     border: 1px solid #9a9a9a;
     padding: .2em .3em;
     margin-left: 0px !important;
     max-width: 17em;
-    overflow:visible;
-    width: auto;
-    font-size: 1em; /* make sure size of font cascades to button in ie*/
 }
 
 

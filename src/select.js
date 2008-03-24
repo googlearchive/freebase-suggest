@@ -38,6 +38,7 @@
  * @type   jQuery
  */
 $.fn.freebaseSelect = function(options) {
+    $(this).addClass("fbs-enumcontrol");
     return $(this)._freebaseInput(fb.select.getInstance(), options);
 };
 
@@ -48,11 +49,12 @@ function SelectControl() {
         service_url: "http://www.freebase.com",
         mqlread_path: "/api/service/mqlread",
         type: "/location/us_state",
+        soft: true,
         limit: 100,
         filter: null,
         transform: null
     };
-    this.min_len = 0;    
+    this.min_len = 0;
 };
 // inheritance: prototype/constructor chaining
 SelectControl.prototype = new fb.InputSelectControl();
@@ -86,8 +88,8 @@ p.list_load = function(input) {//fb.log("list_load", input);
         '"query":{' +
             '"query":[{' +
                 '"name":null,' +
-                '"id":null,' +   
-                '"sort":"name",' +                               
+                '"id":null,' +
+                '"sort":"name",' +
                 '"type":"'+options.type+'",'+
                 '"limit":'+options.limit +
             '}]' +
@@ -109,7 +111,7 @@ p.list_receive_hook = function(input, txt, result) {
     this.cache[input.fb_id] = result;
 };
 
-p.list_show_hook = function(list, input, options) {    
+p.list_show_hook = function(list, input, options) {
     $(list).next(".fbs-selectnew").hide();
 };
 
@@ -139,6 +141,15 @@ p.delay = function(l) {
 p.create_new = function(input){
     //Can't create new topics with select control
     return;
+};
+
+p.click = function(e) {
+    var x = e.clientX - $(e.target).offset().left;
+    var width = e.target.clientWidth - 10;
+    if(x > width) {
+        //Delay handling of dropdown so that it occurs after manage_delay
+        window.setTimeout(this.delegate("handle", [{id:"DROPDOWN", input:e.target}]), this.dropdown_delay);
+    }
 };
 
 fb.select = SelectControl;
