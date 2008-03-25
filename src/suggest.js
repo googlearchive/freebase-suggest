@@ -375,7 +375,7 @@ p.flyout_show = function(li, options, img_src, blurb) {//fb.log("flyout_show", l
     $("#fbs_flyout .fbs-flyout-domains").empty().append($(".fbs-li-domains", li).text());
     $("#fbs_flyout .fbs-flyout-blurb").empty().append(blurb);
     
-    var pos = $("#fbs_list > .fbs-bottomshadow > .fbs-ul").offset();
+    var pos = $(this.get_list()).offset();
     var left = pos.left + options.width;
     var sl = document.body.scrollLeft;
     var ww = $(window).width();
@@ -390,6 +390,11 @@ p.flyout_show = function(li, options, img_src, blurb) {//fb.log("flyout_show", l
 p.freebase_url = function(id, options) {
     var url = options.service_url + "/view" + fb.quote_id(id);
     return url;
+};
+
+p.release_hook = function(input){
+    $(this.get_list()).next(".fbs-selectnew").remove();
+    fb.InputSelectControl.prototype.release_hook.call(this, input);
 };
 
 /**

@@ -399,6 +399,14 @@ fb.InputSelectControl.prototype.constructor = fb.InputSelectControl;
 // shorthand for fb.InputSelectControl.prototype
 var p = fb.InputSelectControl.prototype;
 
+p.get_list = function(){
+    return $("#fbs_list > .fbs-bottomshadow > .fbs-ul")[0];
+};
+
+p.get_list_items = function(){
+    return $(this.get_list()).children("li");
+};
+
 p.release_hook = function(input) {
     this.list_hide();
 };
@@ -489,8 +497,8 @@ p.list_show = function(input, result) {//fb.log("list_show", input, result);
         list = $("> .fbs-ul")[0];
     }
     if (!list) 
-        list = $("#fbs_list > .fbs-bottomshadow > .fbs-ul")[0];
-    
+        list = this.get_list();    
+
     $("#fbs_list > .fbs-bottomshadow")
         .unbind()
         .mousedown(this.delegate("mousedown_list"))
@@ -633,7 +641,7 @@ p.loading_hide = function() {
 
 p.list_select = function(index, li, options) {
     var sli = null;
-    $("#fbs_list > .fbs-bottomshadow > .fbs-ul > li").each(function(i,n) {
+    this.get_list_items().each(function(i,n) {
         if (i == index || li == n) {
             $(n).addClass("fbs-li-selected");
             sli = n;
@@ -652,7 +660,7 @@ p.list_select = function(index, li, options) {
 p.list_select_hook = function(sli, options) { };
 
 p.list_length = function() {
-    return $("#fbs_list > .fbs-bottomshadow > .fbs-ul > li").length;
+    return this.get_list_items().length;
 };
 
 p.list_selection = function(returnObj) {
@@ -660,7 +668,7 @@ p.list_selection = function(returnObj) {
         returnObj = {};
     returnObj.index = -1;
     returnObj.item = null;
-    $("#fbs_list > .fbs-bottomshadow > .fbs-ul > li").each(function(i,n){
+    this.get_list_items().each(function(i,n){
         if (n.className.indexOf("fbs-li-selected") != -1) {
             returnObj.index = i;
             returnObj.item = n;
