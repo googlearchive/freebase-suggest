@@ -265,7 +265,10 @@ fb.InputControl.prototype = {
     },
 
     keydown: function(e) {//fb.log("on_keydown", e.keyCode);
-        switch(e.keyCode) {
+        switch(e.keyCode) {      
+          case  9: // tab       
+             this.tab(e);
+             break;                
           case 38: // up
           case 40: // down
              // prevents cursor/caret from moving (in Safari)
@@ -277,7 +280,7 @@ fb.InputControl.prototype = {
     },
 
     keypress: function(e) {//fb.log("on_keypress", e.keyCode);
-        switch(e.keyCode) {
+        switch(e.keyCode) {         
           case 38: // up
           case 40: // down
              // prevents cursor/caret from moving
@@ -297,14 +300,14 @@ fb.InputControl.prototype = {
 
     keyup: function(e) {//fb.log("on_keyup", e.keyCode);
         switch(e.keyCode) {
-          case 38: // up
-            e.preventDefault();
-            this.uparrow(e);
-            break;
-          case 40: // down
-            e.preventDefault();
-            this.downarrow(e);
-            break;
+            case 38: // up
+                e.preventDefault();
+                this.uparrow(e);
+                break;
+            case 40: // down
+                e.preventDefault();
+                this.downarrow(e);
+                break;
             case  9: // tab       
             case 13: // enter
             case 16: // ctrl
@@ -315,9 +318,9 @@ fb.InputControl.prototype = {
             case 39: // right
             case 224:// apple/command
                 break;
-          default:
-             this.textchange(e);
-             break;
+            default:
+                this.textchange(e);
+                break;
         } 
     },
     
@@ -341,6 +344,10 @@ fb.InputControl.prototype = {
     
     downarrow: function(e) {
         this.handle({id:"DOWNARROW", input:e.target});
+    },
+    
+    tab: function(e) {
+        this.handle({id:"TAB", input:e.target, domEvent:e});
     },
     
     enterkey: function(e) {
@@ -901,6 +908,14 @@ state_selecting.prototype.handle = function(data) {//fb.log("state_selecting.han
         case "DROPDOWN":
             this.sm.transition("getting", null, data);
             break;
+        case "TAB":
+            var s = this.c.list_selection();
+            if (s.index == -1 || !s.item) {
+                $(data.input).trigger("fb-noselect", [data]);
+                return;
+            }               
+            this.listitem_select(data.input, s.item);
+            break;
         case "ENTERKEY-SHIFT":
             // Create new topic if user is holding shift while hitting enter
             this.c.create_new(data.input);
@@ -912,32 +927,16 @@ state_selecting.prototype.handle = function(data) {//fb.log("state_selecting.han
                 $(data.input).trigger("fb-noselect", [data]);
                 return;
             }
-            
             if ($("#fbs_list").css("display") != "none"){
                 data.domEvent.preventDefault();
             } else {
                 $(data.input).trigger("fb-submit", [s.item.fb_data]);
                 return;   
-            }
-            data.id = "LISTITEM_CLICK";
-            data.item = s.item;
-            // let it fall directly into
-            // 'case "LISTITEM_CLICK":'
+            }          
+            this.listitem_select(data.input, s.item);            
+            break;
         case "LISTITEM_CLICK":
-            if (!data.item) 
-                return;
-            switch(data.item.fb_data.id) {
-                case "NO_MATCHES":
-                    break;
-                default:
-                    var txt = $(".fbs-li-name", data.item).text();
-                    $(data.input).val(txt);
-                    this.c.caret_last(data.input);
-                    $(data.input).trigger("fb-select", [data.item.fb_data])
-                        .trigger("suggest", [data.item.fb_data]); // legacy - for compatibility
-                    this.c.list_hide();
-                    break;
-            }
+            this.listitem_select(data.input, data.item);
             break;
         case "ESCAPEKEY":
             this.c.list_hide();
@@ -946,6 +945,23 @@ state_selecting.prototype.handle = function(data) {//fb.log("state_selecting.han
         default:
             break;
     };
+};
+
+state_selecting.prototype.listitem_select = function(input, item) {
+    if (!item) 
+        return;
+    switch(item.fb_data.id) {
+        case "NO_MATCHES":
+            break;
+        default:
+            var txt = $(".fbs-li-name", item).text();
+            $(input).val(txt);
+            this.c.caret_last(input);
+            $(input).trigger("fb-select", [item.fb_data])
+                .trigger("suggest", [item.fb_data]); // legacy - for compatibility
+            this.c.list_hide();
+            break;
+    }
 };
 
 
