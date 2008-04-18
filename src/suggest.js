@@ -55,7 +55,9 @@
  * 
  * transform:   Specify a transform function if you want to transform the default
  *              display of the suggest list item.
- *              
+ * 
+ * initialize:  Set to true for control to be managed from the start. Use when you know
+ *              that the control started with the focus. (Default: false)
  * 
  * In addition, freebaseSuggest will trigger the following events on behalf of
  * the input it's attached to. They include:
@@ -134,7 +136,8 @@ function SuggestControl() {
         thumbnail_path: "/api/trans/image_thumb",
         thumbnail_param: {},
         filter: null,
-        transform: null
+        transform: null,
+        initialize: false
     }; 
 };
 // inheritance: prototype/constructor chaining
