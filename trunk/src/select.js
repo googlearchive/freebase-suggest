@@ -17,6 +17,9 @@
  * 
  * limit:       The max number of instances to show.
  * 
+ * initialize:  Set to true for control to be managed from the start. Use when you know
+ *              that the control started with the focus. (Default: false)
+ *
  * In addition, freebaseSelect will trigger the following events on behalf of
  * the input it's attached to. They include:
  * 
@@ -52,7 +55,8 @@ function SelectControl() {
         soft: true,
         limit: 100,
         filter: null,
-        transform: null
+        transform: null,
+        initialize: false
     };
     this.min_len = 0;
 };

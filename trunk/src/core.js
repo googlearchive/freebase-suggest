@@ -29,6 +29,11 @@ $.fn._freebaseInput = function(control, options) {
             control.option_hash[this.fb_id] = o;
             
             $(this).click(control.delegate("click"));
+            
+            // If initialize option is true then start off control as managed.
+            if (options.initialize) {
+                control.manage(this);
+            }
         });
 };
 
