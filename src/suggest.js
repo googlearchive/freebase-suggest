@@ -45,7 +45,8 @@
  * thumbnail_path:  The path to the thumbnail service to be shown in the flyout. 
  *                  Default is "/api/trans/image_thumb".
  * 
- * thumbnail_param: The query paramters to the thumbnail service. Default is {}.
+ * thumbnail_param: The query paramters to the thumbnail service.
+ *                  Default is {maxwidth:70, maxheight: 70}.
  * 
  * filter:      Specify a filter function if you want to filter any of the items
  *              returned by ac_path service. The function is called with one
@@ -134,7 +135,7 @@ function SuggestControl() {
             maxlength: 300
         },
         thumbnail_path: "/api/trans/image_thumb",
-        thumbnail_param: {},
+        thumbnail_param: {maxwidth: 70, maxheight: 70},
         filter: null,
         transform: null,
         initialize: false
