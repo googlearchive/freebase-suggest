@@ -154,9 +154,9 @@ fb.InputControl = function() {
     this.option_hash = {};
     this.sm = null;
     this.delegates = {};
-    this.dropdown_delay = 300;
-    this.manage_delay = 200;
-    this.release_delay = 100;
+    this.dropdown_delay = 30;
+    this.manage_delay = 20;
+    this.release_delay = 10;
 };
 
 fb.InputControl.prototype = {
@@ -387,8 +387,9 @@ fb.InputControl.prototype = {
 fb.InputSelectControl = function() {
     fb.InputControl.call(this);
     this.min_len = 1;
+    this.should_filter = true;
     this.fudge = 8;
-    this.loadmsg_delay = 500;
+    this.loadmsg_delay = 50;
     
     /**
      * initialize the select state machine
@@ -489,6 +490,25 @@ p.list_receive_hook = function(input, txt, result) {
     // like updating the cache
 };
 
+p.position = function(element, input) {
+    var options = this.options(input);
+    var pos = $(input).offset({border: true, padding: true});
+    var left = pos.left;
+    var top = pos.top + input.clientHeight + this.fudge;
+    
+    var right = pos.left + options.width;
+    var window_right = $(window).width() + document.body.scrollLeft;
+    
+    // If the right edge of the dropdown extends beyond the right
+    //   of the screen then right-justify the dropdown to the input.
+    if (right > window_right && options.width > $(input).outerWidth()) {
+        left = left - (options.width - $(input).outerWidth()) + 4;
+    }
+    $(element)
+        .css({top:top, left:left, width:options.width})
+        .show();
+}
+
 p.list_show = function(input, result) {//fb.log("list_show", input, result);
     if (!input) 
         return;
@@ -510,7 +530,7 @@ p.list_show = function(input, result) {//fb.log("list_show", input, result);
     }
     if (!list) 
         list = this.get_list();    
-
+    
     $("#fbs_list > .fbs-bottomshadow")
         .unbind()
         .mousedown(this.delegate("mousedown_list"))
@@ -534,11 +554,15 @@ p.list_show = function(input, result) {//fb.log("list_show", input, result);
         $(list).append(this.create_list_item({id:"NO_MATCHES", text:"no matches"}, null, options).addClass("fbs-li-nomatch"));
     
     var filtered = [];
-    $.each(result, function(i, n) {
-        if (filter.apply(null, [n, txt]))
-            filtered.push(n);
-    });
-    filtered = this.filter_hook(filtered, result);
+    if(this.should_filter) {
+        $.each(result, function(i, n) {
+            if (filter.apply(null, [n, txt]))
+                filtered.push(n);
+        });
+        filtered = this.filter_hook(filtered, result);
+    } else {
+        filtered = result;
+    }
     var owner = this;    
     $.each(filtered, function(i, n) {
         $(list).append(owner.create_list_item(n, txt, options));
@@ -548,11 +572,7 @@ p.list_show = function(input, result) {//fb.log("list_show", input, result);
     // like "Create New" item under the list
     this.list_show_hook(list, input, options);
     
-    var pos = $(input).offset({border: true, padding: true});
-    var top = pos.top + input.clientHeight + this.fudge;
-    $("#fbs_list")
-        .css({top:top, left:pos.left, width:options.width})
-        .show();
+    this.position($("#fbs_list"), input);
 };
 
 p.list_show_hook = function(list, input, options) { };
@@ -635,13 +655,7 @@ p.loading_show = function(input) {
                     '</div>' +
                 '</div>');        
     }
-    var options = this.options(input);
-    var pos = $(input).offset({border: true, padding: true});
-    
-    var top = pos.top + input.clientHeight + this.fudge;
-    $("#fbs_loading")
-        .css({top:top, left:pos.left, width:options.width})
-        .show();
+    this.position($("#fbs_loading"), input);
 };
 
 /**
@@ -812,6 +826,8 @@ state_start.prototype.handle = function(data) {//fb.log("state_start.handle", da
             break;
         case "ENTERKEY":
             $(data.input).trigger("fb-noselect", [data]);
+            this.sm.transition("start");
+            window.clearTimeout(this.c.textchange_timeout);
             break;
         case "ENTERKEY-SHIFT":
             data.domEvent.preventDefault();
@@ -856,8 +872,11 @@ state_getting.prototype.handle = function(data) {//fb.log("state_getting.handle"
         case "LIST_RESULT":
             this.sm.transition("selecting", null, data);
             break;
-        case "ENTERKEY":      
+        case "ENTERKEY":
             $(data.input).trigger("fb-noselect", [data]);
+            this.c.list_hide();
+            this.sm.transition("start");
+            window.clearTimeout(this.c.textchange_timeout);
             break;
         case "ENTERKEY-SHIFT":
             data.domEvent.preventDefault();       
@@ -898,6 +917,7 @@ state_selecting.prototype.handle = function(data) {//fb.log("state_selecting.han
     var options = this.c.options(data.input);
     switch (data.id) {
         case "TEXTCHANGE":
+            this.c.should_filter = true;
             this.sm.transition("start", null, null, data);
             break;
         case "DOWNARROW":
@@ -911,7 +931,13 @@ state_selecting.prototype.handle = function(data) {//fb.log("state_selecting.han
             this.c.scroll_into_view(li);
             break;
         case "DROPDOWN":
-            this.sm.transition("getting", null, data);
+            if(this.c.val(data.input) == "") {
+                this.sm.transition("start");
+                this.c.list_hide();
+            } else {
+                this.sm.transition("getting", null, data);
+                this.c.should_filter = !this.c.should_filter;
+            }
             break;
         case "TAB":
             var s = this.c.list_selection();

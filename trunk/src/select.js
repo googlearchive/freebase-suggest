@@ -117,6 +117,13 @@ p.list_receive_hook = function(input, txt, result) {
 
 p.list_show_hook = function(list, input, options) {
     $(list).next(".fbs-selectnew").hide();
+    
+    var text = this.val(input);
+    if(text && text.length > 0) {
+        var li = $("li.fbs-li:contains("+text+"):first", list);
+        if(li.length > 0)
+            li[0].scrollIntoView(false);
+    }
 };
 
 p.transform = function(data, txt) {
