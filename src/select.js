@@ -40,9 +40,22 @@
  * @cat    Plugins/Freebase
  * @type   jQuery
  */
-$.fn.freebaseSelect = function(options) {
-    $(this).addClass("fbs-enumcontrol");
-    return $(this)._freebaseInput(fb.select.getInstance(), options);
+$.fn.freebaseSelect = function(action, options) {
+    if (typeof action == 'object' && options == null) {
+        // Only passed options so assume activation
+        options = action;
+        action = "activate";
+    }
+    
+    if (action == 'activate') {
+        $(this).addClass("fbs-enumcontrol");
+        $(this)._freebaseInput(fb.select.getInstance(), options);
+    } else if (action == 'destroy') {
+        $(this).removeClass("fbs-enumcontrol");
+        fb.select.getInstance().destroy(this);
+    }
+    
+    return $(this);
 };
 
 function SelectControl() { 
