@@ -17,7 +17,11 @@ $.fn._freebaseInput = function(control, options) {
         .attr("autocomplete", "off")
         .each(function() {
             control.release(this);
-            $(this).unbind("focus", control.delegate("focus")).focus(control.delegate("focus")); 
+            var owner = this;
+            $.each(["focus", "click"], function(i,n) {
+               $(owner).unbind(n, control.delegate(n)).bind(n, control.delegate(n));
+            });
+            
             // we might be just resetting the options
             if (typeof this['fb_id'] == 'undefined')
                 this.fb_id = control.counter++;
@@ -27,8 +31,6 @@ $.fn._freebaseInput = function(control, options) {
             var o = {};
             $.extend(o, control.default_options, options);
             control.option_hash[this.fb_id] = o;
-            
-            $(this).click(control.delegate("click"));
             
             // If initialize option is true then start off control as managed.
             if (options.initialize) {
@@ -123,20 +125,20 @@ fb.state_machine.prototype = {
         var target = this.states[to_state];
         if (!target) 
             throw("Unrecongized state:" + to_state);
-    
+        
         var source = this.states[this.current_state];
-
+        
         // exit current state
         source.exit(exit_data);
-    
+        
         // enter target state
         target.enter(enter_data);
-
+        
         this.current_state = to_state;
         
         // handle data
         this.handle(data);
-    },    
+    },
     handle: function(data) {
         if (data) 
             this.states[this.current_state].handle(data);
@@ -233,18 +235,34 @@ fb.InputControl.prototype = {
     // over-ride to handle manage
     manage_hook: function(input) {},
     
-    release: function(input) {//fb.log("release", input); 
-        var owner = this;    
+    release: function(input) {//fb.log("release", input);
+        var owner = this;
         $.each(["blur", "keydown", "keypress", "keyup", "input", "paste"], function(i,n) {
            $(input).unbind(n, owner.delegate(n)); 
         });
+        
         this.transition("start");
         this.release_hook(input);
     },
     
     // over-ride to handle release
     release_hook: function(input) {},
-
+    
+    destroy: function(input) {
+        //Clear all timeouts
+        window.clearTimeout(this.manage_timeout);
+        window.clearTimeout(this.release_timeout);
+        window.clearTimeout(this.textchange_timeout);
+        window.clearTimeout(this.loadmsg_timeout);
+        
+        //Clear all event binding
+        var owner = this;
+        $.each(["focus", "click"], function(i,n) {
+           $(input).unbind(n, owner.delegate(n)); 
+        });
+        this.release(input);
+    },
+    
     focus: function(e) {//fb.log("on_focus", e);
         window.clearTimeout(this.manage_timeout);
         var input = e.target;
@@ -848,17 +866,17 @@ state_getting.prototype = new select_state();
 state_getting.prototype.constructor = state_getting;
 
 state_getting.prototype.enter = function(data) {//fb.log("state_getting.enter", data);
-    window.clearTimeout(this.loadmsg_timeout);
+    window.clearTimeout(this.c.loadmsg_timeout);
     if (!data || !data.input) 
         return;
     // show loading msg
-    this.loadmsg_timeout = window.setTimeout(this.c.delegate("loading_show", [data.input]), this.c.loadmsg_delay);
+    this.c.loadmsg_timeout = window.setTimeout(this.c.delegate("loading_show", [data.input]), this.c.loadmsg_delay);
     // request autocomplete url
     this.c.list_load(data.input);
 };
 state_getting.prototype.exit = function(data) {//fb.log("state_getting.exit", data); 
     // hide loading msg
-    window.clearTimeout(this.loadmsg_timeout);
+    window.clearTimeout(this.c.loadmsg_timeout);
     this.c.loading_hide();
 };
 state_getting.prototype.handle = function(data) {//fb.log("state_getting.handle", data);

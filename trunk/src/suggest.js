@@ -107,8 +107,20 @@
  * @cat    Plugins/Freebase
  * @type   jQuery
  */
-$.fn.freebaseSuggest = function(options) {
-    return $(this)._freebaseInput(fb.suggest.getInstance(), options);
+$.fn.freebaseSuggest = function(action, options) {
+    if (typeof action == 'object' && options == null) {
+        // Only passed options so assume activation
+        options = action;
+        action = "activate";
+    }
+    
+    if (action == 'activate') {
+        $(this)._freebaseInput(fb.suggest.getInstance(), options);
+    } else if (action == 'destroy') {
+        fb.suggest.getInstance().destroy(this);
+    }
+    
+    return $(this);
 };
 
 /**
