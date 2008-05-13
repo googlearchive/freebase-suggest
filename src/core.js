@@ -768,8 +768,25 @@ p.list_select_prev = function(options, data) {
 };
 
 p.scroll_into_view = function(elt, p) {
-    if (elt) 
+    if (!elt)
+        return;
+    if (!p)
+        p = elt.parentNode;
+    if (!p) {
         elt.scrollIntoView(false);
+        return;
+    }
+
+    if (elt.offsetTop < p.scrollTop) {
+        p.scrollTop = elt.offsetTop;
+        return;
+    }
+    
+    var elt_h = $(elt).height();
+    var p_h = $(p).height();
+    if ((elt.offsetTop + elt_h) > (p.scrollTop + p_h)) {
+        p.scrollTop = elt.offsetTop + elt_h - p_h;
+    }
 };
 
 /**
