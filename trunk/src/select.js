@@ -135,7 +135,7 @@ p.list_show_hook = function(list, input, options) {
     if(text && text.length > 0) {
         var li = $("li.fbs-li:contains("+text+"):first", list);
         if(li.length > 0)
-            li[0].scrollIntoView(false);
+            this.scroll_into_view(li[0]);
     }
 };
 
