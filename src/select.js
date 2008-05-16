@@ -101,18 +101,29 @@ p.list_load = function(input) {//fb.log("list_load", input);
     }
     var options = this.options(input);    
     // mql read
-    var q = '{' +
-        '"query":{' +
-            '"query":[{' +
-                '"name":null,' +
-                '"id":null,' +
-                '"sort":"name",' +
-                '"type":"'+options.type+'",'+
-                '"limit":'+options.limit +
-            '}]' +
-        '}' +
-    '}';
-    var param = {queries: q};
+    var param = {}
+    if (options.mql_query)
+        param.queries =
+            '{' +
+                '"query": {' +
+                  '"query": ' + options.mql_query +
+                '}' +
+            '}';
+            
+    else {
+        var q = '{' +
+            '"query":{' +
+                '"query":[{' +
+                    '"name":null,' +
+                    '"id":null,' +
+                    '"sort":"name",' +
+                    '"type":"'+options.type+'",'+
+                    '"limit":'+options.limit +
+                '}]' +
+            '}' +
+        '}';
+        param.queries = q;
+    }
     $.ajax({
         type: "GET",
     url: options.service_url + options.mqlread_path,
