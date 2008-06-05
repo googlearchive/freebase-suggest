@@ -169,10 +169,6 @@ p.filter_hook = function(filtered, result) {
     return filtered;
 };
 
-p.delay = function(l) {
-    return 0;
-};
-
 p.create_new = function(input){
     //Can't create new topics with select control
     return;
