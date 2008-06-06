@@ -444,6 +444,7 @@ FlyoutResourcesHandler.prototype = {
                 url: this.blurb_url(id),
                 data: this.options.blurb_param,
                 success: fb.delegate(this.receive_article, this),
+                error: fb.delegate(this.receive_article_error, this),                
                 dataType: use_jsonp(this.options) ? "jsonp" : null,
                 cache: true
             });
@@ -465,6 +466,9 @@ FlyoutResourcesHandler.prototype = {
         }
         this.receive("article", o);
     },
+    receive_article_error: function() {
+        this.receive("article", "Description could not be displayed");
+    },    
     load_image: function(id) {
         if (id) {
             var i = new Image();
