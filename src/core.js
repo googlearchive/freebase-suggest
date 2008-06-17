@@ -583,7 +583,7 @@ p.list_show = function(input, result) {//fb.log("list_show", input, result);
     }
     var owner = this;    
     $.each(filtered, function(i, n) {
-        $(list).append(owner.create_list_item(n, txt, options));
+        $(list).append(owner.create_list_item(n, txt, options, i));
     });
     
     // hook to add additional html elemments and handlers
@@ -606,7 +606,7 @@ p.list_hide = function() {//fb.log("list_hide");
 
 p.list_hide_hook = function() {};
 
-p.create_list_item = function(data, txt, options) {
+p.create_list_item = function(data, txt, options, index) {
     var li = $("<li class='fbs-li'></li>")[0];
     
     var trans = this.transform;
@@ -616,6 +616,8 @@ p.create_list_item = function(data, txt, options) {
     var html = trans.apply(this, [data, txt]);
    
     $(li).append(html);
+    
+    data.index = index;
     
     // sometimes data contains text and/or name
     if ("text" in data)
