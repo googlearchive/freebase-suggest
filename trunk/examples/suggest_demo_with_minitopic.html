@@ -31,9 +31,9 @@ Enter a person: <input type="text" id="example1" />
 
 <script type="text/javascript">
 jQuery(function($) {
-   var ac_param = { type: '/people/person', category: "instance", get_all_types: "0", disamb: "1", limit: "10", strict:1 };
+
    $("#example1")
-      .freebaseSuggest( {ac_param:ac_param} )
+      .freebaseSuggest( {ac_param:{type:'/people/person'}} )
       .bind("fb-select", function(e, data) { 
          $('#miniTopic').show().freebaseMiniTopic(data.id);
     });
