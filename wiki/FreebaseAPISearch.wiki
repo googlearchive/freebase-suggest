@@ -1,3 +1,7 @@
+Please see: http://www.freebase.com/view/freebase/metaweb_api_service
+for an up-to-date documentation of all Freebase API services
+
+
 ||Name||search||
 ||Description||Provides basic text search service, based on a query string and some optional constraints.||
 ||Accessible Via||/api/service/search||
