@@ -108,7 +108,7 @@
  * @type   jQuery
  */
 $.fn.freebaseSuggest = function(action, options) {
-    if (typeof action == 'object' && options == null) {
+    if ((typeof action == "undefined" || typeof action == 'object') && options == null) {
         // Only passed options so assume activation
         options = action;
         action = "activate";
