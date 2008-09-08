@@ -1,5 +1,4 @@
 /**
- * !!! NOTICE: This requires jQuery rev 3578 or higher !!!
  * 
  * Version @VERSION
  */
