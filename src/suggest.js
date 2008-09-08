@@ -108,7 +108,7 @@
  * @type   jQuery
  */
 $.fn.freebaseSuggest = function(action, options) {
-    if ((typeof action == "undefined" || typeof action == 'object') && options == null) {
+    if (typeof action == 'object' && options == null) {
         // Only passed options so assume activation
         options = action;
         action = "activate";
@@ -383,12 +383,14 @@ p.flyout_show = function(li, options, img_src, blurb) {//fb.log("flyout_show", l
                 '</div>');   
     }
     
-    $("#fbs_flyout .fbs-flyout-name").empty().append('<a href="' + this.freebase_url(li.fb_data.id, options) + '">' + $(".fbs-li-name", li).text() + '</a>');
+    $a = $('<a href="' + this.freebase_url(li.fb_data.id, options) + '"/>');
+    $a.text($(".fbs-li-name", li).text());
+    $("#fbs_flyout .fbs-flyout-name").empty().append($a);
     $("#fbs_flyout .fbs-flyout-image").empty();
     if (img_src != "#")
         $("#fbs_flyout .fbs-flyout-image").append('<img src="' + img_src + '"/>');
-    $("#fbs_flyout .fbs-flyout-types").empty().append($(".fbs-li-types", li).text());
-    $("#fbs_flyout .fbs-flyout-domains").empty().append($(".fbs-li-domains", li).text());
+    $("#fbs_flyout .fbs-flyout-types").text($(".fbs-li-types", li).text());
+    $("#fbs_flyout .fbs-flyout-domains").text($(".fbs-li-domains", li).text());
     $("#fbs_flyout .fbs-flyout-blurb").empty().append(blurb);
     
     var pos = $(this.get_list()).offset();
@@ -429,10 +431,21 @@ function FlyoutResourcesHandler(owner, li, options) {
     this.options = options;
     var me = this;
     $.each(["article", "image"], function(i,n) {
-        var id = li.fb_data[n];
-        if (id && typeof id == 'object')
-            id = id.id;
-        me["load_" + n](id);
+        var item = li.fb_data[n];
+        //If item is an object then extract data from it,
+        //   else treat the item as an id string.
+        if (item && typeof item == 'object') {
+              if ('value' in item) {
+                  // If we have a value then use this
+                  //   as the data
+                  me.receive(n, item.value);
+              } else {
+                  // Otherwise load the data from the id
+                  me["load_" + n](item.id);
+              }
+        } else {
+            me["load_" + n](item);
+        }
     });
     
 };
