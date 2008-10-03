@@ -217,7 +217,7 @@ fb.InputControl.prototype = {
         var t = .3;
         if (l > 0)
             t = 1/(6 * (l-0.7)) + .3;
-        return t * 1000;
+        return (t * 1000)/2;
     },   
     
     manage: function(input) {
