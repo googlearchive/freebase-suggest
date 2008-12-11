@@ -482,7 +482,7 @@ p.list_receive = function(input, txt, o) {//fb.log("list_receive", input, query,
     // 3. { result: [...] }
     // 4. { query: { result: [...] } }
     var result = [];
-    if (o.code == "/api/status/timeout"){
+    if (o.code == "/api/status/timedout"){
         this.handle({id:"TIMEOUT", input:input, result:result});
         return;
     }
