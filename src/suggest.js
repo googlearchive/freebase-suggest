@@ -76,6 +76,7 @@
  *
  * fb-noselect:   Triggered when the user performs a select action without highlighting an entry.
  * 
+ * timeout-content: HTML to show when a timeout status is received
  *
  * @example
  * $('#myInput')
