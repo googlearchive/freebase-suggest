@@ -23,6 +23,10 @@
  * service_url: This the base url to all the api services like autocomplete,
  *              blurbs and thumbnails. Default is "http://www.freebase.com".
  * 
+ * freebase_url:  This is the base url to the freebase site. If set, the control will
+ *                create absolute urls with freebase_url as the base; otherwise relative urls
+ *                are used.
+ * 
  * ac_path:     The path to the autcomplete service. Default is "/api/service/search".
  * 
  * ac_param:    A dicionary of query parameters to the autocomplete service. 
@@ -150,7 +154,8 @@ function SuggestControl() {
         thumbnail_param: {maxwidth: 70, maxheight: 70},
         filter: null,
         transform: null,
-        initialize: false
+        initialize: false,
+        timeout_content:null
     }; 
 };
 // inheritance: prototype/constructor chaining

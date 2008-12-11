@@ -482,7 +482,11 @@ p.list_receive = function(input, txt, o) {//fb.log("list_receive", input, query,
     // 3. { result: [...] }
     // 4. { query: { result: [...] } }
     var result = [];
-    if ("list" in o && "listItems" in o.list)
+    if (o.code == "/api/status/timeout"){
+        this.handle({id:"TIMEOUT", input:input, result:result});
+        return;
+    }
+    else if ("list" in o && "listItems" in o.list)
         result = o.list.listItems;
     else if ("result" in o)
         result = o.result;
@@ -659,21 +663,25 @@ p.transform = function(data, txt) {
 /**
  * show loading message
  */
-p.loading_show = function(input) {
+p.loading_show = function(input, content) {
+    
+    content = typeof(content) == "string" ? content : "loading...";
     this.list_hide();
-    if (!$("#fbs_loading").length) {
+    if (!$("#fbs_loading").length || (this._last_loading_content != content) ){
+        $("#fbs_loading").remove();
         $(document.body)
             .append(
                 '<div style="display:none;position:absolute" id="fbs_loading" class="fbs-topshadow">' +
                     '<div class="fbs-bottomshadow">'+
                         '<ul class="fbs-ul">' +
                             '<li class="fbs-li">'+ 
-                                '<div class="fbs-li-name">loading...</div>' +
+                                '<div class="fbs-li-name">'+ content + '</div>' +
                             '</li>' +
                         '</ul>' +
                     '</div>' +
                 '</div>');        
     }
+    this._last_loading_content = content;
     this.position($("#fbs_loading"), input);
 };
 
@@ -904,6 +912,14 @@ state_getting.prototype.handle = function(data) {//fb.log("state_getting.handle"
     switch (data.id) {
         case "TEXTCHANGE":
             this.sm.transition("start", null, null, data);
+            break;
+        case "TIMEOUT":
+            if (options["timeout_content"]){
+                this.c.loading_hide(data.input);
+                this.c.loading_show(data.input,options["timeout_content"]);
+            } else {
+                this.sm.transition("start");
+            }
             break;
         case "LIST_RESULT":
             this.sm.transition("selecting", null, data);
