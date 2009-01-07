@@ -236,6 +236,14 @@ fb.InputControl.prototype = {
     
     release: function(input) {//fb.log("release", input);
         var owner = this;
+        try {
+            // since we are leaving the autocomplete field, reset the "fired" 
+            // flag
+            delete this.options(input)["_fired"];
+        } catch (e){
+           // if release is called before options have been set, 
+           // an (harmless) exception is thrown
+        }
         $.each(["blur", "keydown", "keypress", "keyup", "input", "paste"], function(i,n) {
            $(input).unbind(n, owner.delegate(n)); 
         });
@@ -896,7 +904,23 @@ state_getting.prototype.enter = function(data) {//fb.log("state_getting.enter", 
     if (!data || !data.input) 
         return;
     // show loading msg
-    this.c.loadmsg_timeout = window.setTimeout(this.c.delegate("loading_show", [data.input]), this.c.loadmsg_delay);
+    var loadmsg_func = null;
+    var options = this.c.options(data.input);
+
+    // if there is no "timeout_content" the don't show the "loading..." message
+    // either. The rationale is that if nothing comes back because it times out
+    // and there is no content to show, don't tell the user it is loading if it
+    // might not ever they won't even be notified about it. But once content has 
+    // come down, then show the loading message on subsequent fetches. We know 
+    // if content has loaded before because "_fired" has been set
+    if (!options["timeout_content"] && !options["_fired"]){
+        loadmsg_func = function(){};
+    } else {
+        loadmsg_func = this.c.delegate("loading_show", [data.input]);
+    }
+
+    this.c.loadmsg_timeout = window.setTimeout(loadmsg_func, this.c.loadmsg_delay);
+
     // request autocomplete url
     this.c.list_load(data.input);
 };
@@ -957,6 +981,8 @@ state_selecting.prototype.enter = function(data) {//fb.log("state_selecting.ente
         return;
     this.c.list_show(data.input, data.result);
     var options = this.c.options(data.input);
+    options['_fired'] = true;
+
     if (!options.soft)
         this.c.list_select(0, null, options);
 };
