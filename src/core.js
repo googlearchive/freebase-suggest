@@ -1028,6 +1028,7 @@ state_selecting.prototype.handle = function(data) {//fb.log("state_selecting.han
         case "ENTERKEY-SHIFT":
             // Create new topic if user is holding shift while hitting enter
             this.c.create_new(data.input);
+            this.sm.transition("start");
             data.domEvent.preventDefault();
             break;
         case "ENTERKEY":
@@ -1069,6 +1070,7 @@ state_selecting.prototype.listitem_select = function(input, item) {
             $(input).trigger("fb-select", [item.fb_data])
                 .trigger("suggest", [item.fb_data]); // legacy - for compatibility
             this.c.list_hide();
+            this.sm.transition("start");
             break;
     }
 };
