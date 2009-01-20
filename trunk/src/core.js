@@ -877,12 +877,7 @@ state_start.prototype.handle = function(data) {//fb.log("state_start.handle", da
             this.sm.transition("getting", null, data);
             break;
         case "ENTERKEY":
-            $(data.input).trigger("fb-noselect", [data]);
-            this.sm.transition("start");
             window.clearTimeout(this.c.textchange_timeout);
-            break;
-        case "ENTERKEY-SHIFT":
-            data.domEvent.preventDefault();
             break;
         default:
             break;
